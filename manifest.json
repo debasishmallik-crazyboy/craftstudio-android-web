@@ -1,6 +1,6 @@
 {
-  "name": "CraftStudio Pro — Vector & Photo Editor",
-  "short_name": "CraftStudio",
+  "name": "দেবাশিস River Studio — Craft Integration Project One",
+  "short_name": "River Studio",
   "description": "Open-source CorelDRAW, Illustrator & Photoshop replacement for Android Tablet & Web, featuring direct ChatGPT generative design transfer.",
   "start_url": "./index.html",
   "display": "standalone",

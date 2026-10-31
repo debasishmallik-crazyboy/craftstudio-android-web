@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#1a1e27">
-  <title>CraftStudio Suite — Official ArtCraft (PhotoCraft, VectorCraft & DesignCraft) for Android Tablet & Web</title>
+  <title>দেবাশিস River Studio — Craft Integration Project One (PhotoCraft, VectorCraft & DesignCraft)</title>
   
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
@@ -37,7 +37,7 @@
     <header id="top-header">
       <div class="brand-section">
         <div class="brand-logo">
-          🎨 CraftStudio <span class="badge-pro">Official Suite</span>
+          🌊 দেবাশিস River Studio <span class="badge-pro">Craft Integration Project One</span>
         </div>
         
         <!-- Official ArtCraft App Switcher -->
@@ -197,6 +197,15 @@ npx @bubblewrap/cli build</pre>
       
       toggleAiModal();
       alert('Downloaded "ai_design.svg"! You can now Drag & Drop or use File → Open inside VectorCraft/PhotoCraft.');
+    }
+
+    // Register Service Worker for 100% Offline Standalone Android Tablet Usage
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('🌊 River Studio Offline PWA Ready! Scope:', reg.scope))
+          .catch(err => console.warn('PWA registration:', err));
+      });
     }
   </script>
 </body>
