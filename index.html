@@ -11,7 +11,7 @@
   
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
-  <link rel="stylesheet" href="css/studio.css?v=2.2">
+  <link rel="stylesheet" href="css/studio.css?v=2.5">
   <style>
     /* Critical Mobile & Layout Invariants (Zero-Overlap Guarantee) */
     :root {
@@ -57,19 +57,19 @@
     .brand-section {
       display: flex !important;
       align-items: center !important;
-      gap: 6px !important;
+      gap: 5px !important;
       min-width: 0 !important;
       overflow: hidden !important;
       flex-shrink: 1 !important;
     }
     .brand-logo {
-      font-weight: 700 !important;
-      font-size: 11.5px !important;
+      font-weight: 600 !important;
+      font-size: 10px !important;
       letter-spacing: -0.2px !important;
       display: flex !important;
       align-items: center !important;
-      gap: 4px !important;
-      color: #ffffff !important;
+      gap: 3px !important;
+      color: #94a3b8 !important;
       white-space: nowrap !important;
       min-width: 0 !important;
       overflow: hidden !important;
@@ -79,12 +79,15 @@
       white-space: nowrap !important;
       overflow: hidden !important;
       text-overflow: ellipsis !important;
+      color: #cbd5e1 !important;
+      font-size: 10px !important;
     }
     .brand-logo span.badge-pro {
-      background: linear-gradient(135deg, #10b380, #38bdf8) !important;
-      color: #0b131e !important;
-      font-size: 8px !important;
-      font-weight: 800 !important;
+      background: rgba(56, 189, 248, 0.2) !important;
+      border: 1px solid rgba(56, 189, 248, 0.4) !important;
+      color: #38bdf8 !important;
+      font-size: 7.5px !important;
+      font-weight: 700 !important;
       padding: 1px 4px !important;
       border-radius: 3px !important;
       text-transform: uppercase !important;
@@ -155,8 +158,8 @@
       <div class="brand-section">
         <div class="brand-logo" title="Debasish Reverse Craft Studio">
           <span class="brand-icon">⚡</span>
-          <span class="brand-text">Debasish Reverse Craft Studio</span>
-          <span class="badge-pro">Craft Web Integration Project One</span>
+          <span class="brand-text">Debasish Craft</span>
+          <span class="badge-pro">v1.0</span>
         </div>
         
         <!-- Official ArtCraft App Switcher -->
@@ -181,6 +184,10 @@
 
       <!-- Action Buttons -->
       <div class="header-actions">
+        <!-- Touch Mode vs Desktop Mode Toggle -->
+        <button id="btn-touch-mode-toggle" class="btn btn-touch-toggle" onclick="toggleTouchMode()" title="Toggle Touchscreen Pro Tablet Mode (Modifiers & Actions)">
+          👆 <span class="action-text">Touch Pro</span>
+        </button>
         <button id="btn-toggle-fullscreen" class="btn" onclick="toggleHeaderCollapse()" title="Toggle Fullscreen Canvas (Maximize workspace)">
           📐 <span class="action-text">Maximize</span>
         </button>
@@ -188,10 +195,7 @@
           ↗️ <span class="action-text">Full Window</span>
         </button>
         <button id="btn-chatgpt-ai" class="btn btn-ai" onclick="toggleAiModal()" title="ChatGPT & Gemini AI Generative Bridge">
-          🤖 <span class="action-text">ChatGPT AI</span>
-        </button>
-        <button id="btn-tablet-guide" class="btn" onclick="toggleTabletModal()" title="Install on Android Tablet as APK or PWA">
-          📱 <span class="action-text">Tablet</span>
+          🤖 <span class="action-text">AI</span>
         </button>
       </div>
     </header>
@@ -199,6 +203,84 @@
     <!-- Floating Restore Button when header is minimized -->
     <button id="floating-restore-header" class="floating-header-btn" onclick="toggleHeaderCollapse()" title="Show Studio Menu">
       ⚡ Studio Menu 🔽
+    </button>
+
+    <!-- Toast Notification for Touch Feedback & Actions -->
+    <div id="studio-toast" class="studio-toast"></div>
+
+    <!-- Touchscreen Pro Companion Dock (Virtual Modifiers & Shortcuts) -->
+    <div id="touch-companion-dock" class="touch-dock touch-dock-left dock-hidden">
+      <!-- Header: Drag Handle, Side Flip & Minimize -->
+      <div class="dock-header">
+        <span class="dock-title">👆 TOUCH PRO</span>
+        <div class="dock-header-actions">
+          <button class="dock-icon-btn" onclick="toggleDockSide()" title="Flip Dock to Left / Right Edge">⇋</button>
+          <button class="dock-icon-btn" onclick="toggleDockCollapse()" title="Minimize Dock">─</button>
+        </div>
+      </div>
+
+      <!-- Sticky Modifier Keys (Shift, Alt, Ctrl) -->
+      <div class="dock-section">
+        <div class="dock-label">MODIFIERS</div>
+        <div class="dock-btn-row">
+          <button id="mod-shift" class="dock-btn dock-mod" onclick="toggleModifier('Shift')" title="Shift: Constrain proportions / straight lines">
+            <span>⇧ Shift</span>
+            <span class="mod-status">OFF</span>
+          </button>
+          <button id="mod-alt" class="dock-btn dock-mod" onclick="toggleModifier('Alt')" title="Alt: Center transform / clone sample / duplicate on drag">
+            <span>⌥ Alt</span>
+            <span class="mod-status">OFF</span>
+          </button>
+          <button id="mod-ctrl" class="dock-btn dock-mod" onclick="toggleModifier('Ctrl')" title="Ctrl: Multi-select / Deep select">
+            <span>⌃ Ctrl</span>
+            <span class="mod-status">OFF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons (Ctrl+J, Del, Right-Click, Undo/Redo, etc.) -->
+      <div class="dock-section">
+        <div class="dock-label">ACTIONS</div>
+        <div class="dock-btn-grid">
+          <button class="dock-btn dock-action btn-ctrl-j" onclick="dispatchCtrlJ()" title="Ctrl+J: Layer via Copy (Selected object/pixels to new transparent layer)">
+            <span class="action-icon">📑</span>
+            <span>Ctrl+J (Copy Layer)</span>
+          </button>
+          <button class="dock-btn dock-action btn-del" onclick="dispatchDelete()" title="Del: Delete selected object / layer">
+            <span class="action-icon">🗑️</span>
+            <span>Delete</span>
+          </button>
+          <button id="btn-right-click-armed" class="dock-btn dock-action" onclick="armRightClick()" title="Right-Click: Tap here, then tap canvas to open context menu (or Long-press canvas)">
+            <span class="action-icon">🖱️</span>
+            <span>Right Click</span>
+          </button>
+          <button class="dock-btn dock-action" onclick="dispatchDeselect()" title="Ctrl+D: Deselect marquee">
+            <span class="action-icon">🚫</span>
+            <span>Deselect</span>
+          </button>
+          <button class="dock-btn dock-action" onclick="dispatchUndo()" title="Ctrl+Z: Undo last action">
+            <span class="action-icon">↺</span>
+            <span>Undo</span>
+          </button>
+          <button class="dock-btn dock-action" onclick="dispatchRedo()" title="Ctrl+Y: Redo last action">
+            <span class="action-icon">↻</span>
+            <span>Redo</span>
+          </button>
+          <button id="btn-pan-armed" class="dock-btn dock-action" onclick="togglePanTool()" title="Space: Hold to pan/scroll canvas with one finger">
+            <span class="action-icon">✋</span>
+            <span>Pan Canvas</span>
+          </button>
+          <button class="dock-btn dock-action" onclick="dispatchTransform()" title="Ctrl+T: Free Transform bounding box">
+            <span class="action-icon">🔄</span>
+            <span>Transform</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Touch Puck (Shown when dock is minimized) -->
+    <button id="floating-touch-puck" class="floating-touch-puck" onclick="toggleDockCollapse()" title="Show Touch Modifiers (Shift/Alt/Ctrl+J)">
+      👆 Modifiers
     </button>
 
     <!-- Main Viewport embedding the Official Rust WebAssembly Engines -->
@@ -277,6 +359,378 @@ npx @bubblewrap/cli build</pre>
   <script>
     let currentApp = 'vectorcraft';
 
+    // =========================================================================
+    // Touchscreen Pro Companion Engine & Virtual Modifiers
+    // =========================================================================
+    let isTouchModeActive = false;
+    let isDockCollapsed = false;
+    let isDockOnRight = false;
+    let isRightClickArmed = false;
+    let isPanArmed = false;
+
+    let modifiersState = {
+      Shift: false,
+      Alt: false,
+      Ctrl: false
+    };
+
+    function showToast(msg) {
+      const toast = document.getElementById('studio-toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1500);
+    }
+
+    function toggleTouchMode(force) {
+      if (typeof force === 'boolean') {
+        isTouchModeActive = force;
+      } else {
+        isTouchModeActive = !isTouchModeActive;
+      }
+      localStorage.setItem('craft_touch_mode', isTouchModeActive ? '1' : '0');
+
+      const btn = document.getElementById('btn-touch-mode-toggle');
+      const dock = document.getElementById('touch-companion-dock');
+      const puck = document.getElementById('floating-touch-puck');
+
+      if (isTouchModeActive) {
+        btn?.classList.add('active');
+        if (isDockCollapsed) {
+          dock?.classList.add('dock-minimized');
+          if (puck) puck.style.display = 'flex';
+        } else {
+          dock?.classList.remove('dock-hidden');
+          dock?.classList.remove('dock-minimized');
+          if (puck) puck.style.display = 'none';
+        }
+        hookIframeEvents();
+        showToast('👆 Touchscreen Pro Mode: ON');
+      } else {
+        btn?.classList.remove('active');
+        dock?.classList.add('dock-hidden');
+        if (puck) puck.style.display = 'none';
+        resetAllModifiers();
+        showToast('🖱️ Desktop Keyboard & Mouse Mode');
+      }
+    }
+
+    function toggleDockCollapse() {
+      isDockCollapsed = !isDockCollapsed;
+      const dock = document.getElementById('touch-companion-dock');
+      const puck = document.getElementById('floating-touch-puck');
+
+      if (isDockCollapsed) {
+        dock?.classList.add('dock-minimized');
+        if (puck) puck.style.display = 'flex';
+      } else {
+        dock?.classList.remove('dock-minimized');
+        dock?.classList.remove('dock-hidden');
+        if (puck) puck.style.display = 'none';
+      }
+    }
+
+    function toggleDockSide() {
+      isDockOnRight = !isDockOnRight;
+      const dock = document.getElementById('touch-companion-dock');
+      const puck = document.getElementById('floating-touch-puck');
+
+      if (isDockOnRight) {
+        dock?.classList.remove('touch-dock-left');
+        dock?.classList.add('touch-dock-right');
+        if (puck) { puck.style.left = 'auto'; puck.style.right = '10px'; }
+        showToast('Dock moved to Right Side');
+      } else {
+        dock?.classList.remove('touch-dock-right');
+        dock?.classList.add('touch-dock-left');
+        if (puck) { puck.style.right = 'auto'; puck.style.left = '10px'; }
+        showToast('Dock moved to Left Side');
+      }
+    }
+
+    function toggleModifier(mod) {
+      modifiersState[mod] = !modifiersState[mod];
+      const btn = document.getElementById('mod-' + mod.toLowerCase());
+      const statusEl = btn?.querySelector('.mod-status');
+
+      if (modifiersState[mod]) {
+        btn?.classList.add('active');
+        if (statusEl) statusEl.textContent = 'ON';
+        sendModifierEvent(mod, 'keydown');
+        showToast(`⇧ ${mod} LOCKED ON (Active for touch drag/scale)`);
+      } else {
+        btn?.classList.remove('active');
+        if (statusEl) statusEl.textContent = 'OFF';
+        sendModifierEvent(mod, 'keyup');
+        showToast(`⇧ ${mod} Unlocked`);
+      }
+    }
+
+    function resetAllModifiers() {
+      ['Shift', 'Alt', 'Ctrl'].forEach(mod => {
+        if (modifiersState[mod]) {
+          modifiersState[mod] = false;
+          const btn = document.getElementById('mod-' + mod.toLowerCase());
+          const statusEl = btn?.querySelector('.mod-status');
+          btn?.classList.remove('active');
+          if (statusEl) statusEl.textContent = 'OFF';
+          sendModifierEvent(mod, 'keyup');
+        }
+      });
+    }
+
+    function sendModifierEvent(mod, type) {
+      const iframe = document.getElementById('engine-frame');
+      const win = iframe?.contentWindow;
+      const canvas = iframe?.contentDocument?.querySelector('canvas');
+      if (!win || !canvas) return;
+
+      const keyMap = {
+        Shift: { key: 'Shift', code: 'ShiftLeft' },
+        Alt: { key: 'Alt', code: 'AltLeft' },
+        Ctrl: { key: 'Control', code: 'ControlLeft' }
+      };
+      const m = keyMap[mod];
+      if (!m) return;
+
+      const evt = new win.KeyboardEvent(type, {
+        key: m.key,
+        code: m.code,
+        ctrlKey: modifiersState.Ctrl,
+        shiftKey: modifiersState.Shift,
+        altKey: modifiersState.Alt,
+        bubbles: true,
+        cancelable: true
+      });
+      canvas.focus();
+      canvas.dispatchEvent(evt);
+      win.dispatchEvent(evt);
+    }
+
+    function dispatchKeyShortcut(key, code, ctrl = false, shift = false, alt = false) {
+      const iframe = document.getElementById('engine-frame');
+      const win = iframe?.contentWindow;
+      const canvas = iframe?.contentDocument?.querySelector('canvas');
+      if (!win || !canvas) return;
+
+      canvas.focus();
+      const down = new win.KeyboardEvent('keydown', {
+        key: key,
+        code: code,
+        ctrlKey: ctrl,
+        shiftKey: shift,
+        altKey: alt,
+        bubbles: true,
+        cancelable: true
+      });
+      const up = new win.KeyboardEvent('keyup', {
+        key: key,
+        code: code,
+        ctrlKey: ctrl,
+        shiftKey: shift,
+        altKey: alt,
+        bubbles: true,
+        cancelable: true
+      });
+      canvas.dispatchEvent(down);
+      win.dispatchEvent(down);
+      setTimeout(() => {
+        win.dispatchEvent(up);
+        canvas.dispatchEvent(up);
+      }, 40);
+    }
+
+    function dispatchCtrlJ() {
+      // PhotoCraft: Layer via Copy (Selected pixels to new transparent layer)
+      // VectorCraft: Duplicate selected object
+      dispatchKeyShortcut('j', 'KeyJ', true);
+      showToast('📑 Ctrl+J: Layer via Copy (New Layer Created!)');
+    }
+
+    function dispatchDelete() {
+      dispatchKeyShortcut('Delete', 'Delete');
+      showToast('🗑️ Delete: Selection/Layer Removed');
+    }
+
+    function dispatchDeselect() {
+      dispatchKeyShortcut('d', 'KeyD', true);
+      showToast('🚫 Deselect (Ctrl+D)');
+    }
+
+    function dispatchUndo() {
+      dispatchKeyShortcut('z', 'KeyZ', true);
+      showToast('↺ Undo (Ctrl+Z)');
+    }
+
+    function dispatchRedo() {
+      dispatchKeyShortcut('y', 'KeyY', true);
+      showToast('↻ Redo (Ctrl+Y)');
+    }
+
+    function dispatchTransform() {
+      dispatchKeyShortcut('t', 'KeyT', true);
+      showToast('🔄 Free Transform (Ctrl+T)');
+    }
+
+    function armRightClick() {
+      isRightClickArmed = !isRightClickArmed;
+      const btn = document.getElementById('btn-right-click-armed');
+      if (isRightClickArmed) {
+        btn?.classList.add('armed');
+        showToast('🖱️ Right Click Armed: Tap anywhere on canvas');
+      } else {
+        btn?.classList.remove('armed');
+        showToast('🖱️ Right Click Disarmed');
+      }
+    }
+
+    function togglePanTool() {
+      isPanArmed = !isPanArmed;
+      const btn = document.getElementById('btn-pan-armed');
+      const iframe = document.getElementById('engine-frame');
+      const win = iframe?.contentWindow;
+      const canvas = iframe?.contentDocument?.querySelector('canvas');
+      if (!win || !canvas) return;
+
+      if (isPanArmed) {
+        btn?.classList.add('active');
+        const down = new win.KeyboardEvent('keydown', {
+          key: ' ',
+          code: 'Space',
+          bubbles: true,
+          cancelable: true
+        });
+        canvas.focus();
+        canvas.dispatchEvent(down);
+        win.dispatchEvent(down);
+        showToast('✋ Pan Canvas Locked (Drag to pan)');
+      } else {
+        btn?.classList.remove('active');
+        const up = new win.KeyboardEvent('keyup', {
+          key: ' ',
+          code: 'Space',
+          bubbles: true,
+          cancelable: true
+        });
+        canvas.dispatchEvent(up);
+        win.dispatchEvent(up);
+        showToast('✋ Pan Canvas Unlocked');
+      }
+    }
+
+    function triggerRightClickAt(x, y) {
+      const iframe = document.getElementById('engine-frame');
+      const win = iframe?.contentWindow;
+      const canvas = iframe?.contentDocument?.querySelector('canvas');
+      if (!win || !canvas) return;
+
+      const down = new win.PointerEvent('pointerdown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        button: 2,
+        buttons: 2,
+        pointerType: 'mouse'
+      });
+      const up = new win.PointerEvent('pointerup', {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        button: 2,
+        buttons: 0,
+        pointerType: 'mouse'
+      });
+      const ctx = new win.MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        button: 2
+      });
+
+      canvas.dispatchEvent(down);
+      canvas.dispatchEvent(up);
+      canvas.dispatchEvent(ctx);
+    }
+
+    function hookIframeEvents() {
+      const iframe = document.getElementById('engine-frame');
+      if (!iframe) return;
+
+      try {
+        const doc = iframe.contentDocument;
+        const win = iframe.contentWindow;
+        if (!doc || !win) return;
+        const canvas = doc.querySelector('canvas');
+        if (!canvas) return;
+
+        // Long-press right click detection on touch
+        let touchTimer = null;
+        let startPos = { x: 0, y: 0 };
+
+        canvas.addEventListener('touchstart', (e) => {
+          if (!isTouchModeActive) return;
+          if (e.touches.length === 1) {
+            const t = e.touches[0];
+            startPos = { x: t.clientX, y: t.clientY };
+            touchTimer = setTimeout(() => {
+              if (navigator.vibrate) navigator.vibrate(50);
+              triggerRightClickAt(startPos.x, startPos.y);
+              showToast('🖱️ Right-Click Context Menu');
+            }, 450);
+          }
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', (e) => {
+          if (touchTimer && e.touches.length > 0) {
+            const t = e.touches[0];
+            const dist = Math.hypot(t.clientX - startPos.x, t.clientY - startPos.y);
+            if (dist > 10) {
+              clearTimeout(touchTimer);
+              touchTimer = null;
+            }
+          }
+        }, { passive: true });
+
+        canvas.addEventListener('touchend', () => {
+          if (touchTimer) {
+            clearTimeout(touchTimer);
+            touchTimer = null;
+          }
+        }, { passive: true });
+
+        // Intercept armed right click
+        canvas.addEventListener('pointerdown', (e) => {
+          if (isRightClickArmed) {
+            isRightClickArmed = false;
+            document.getElementById('btn-right-click-armed')?.classList.remove('armed');
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            triggerRightClickAt(e.clientX, e.clientY);
+            showToast('🖱️ Context Menu Opened');
+            return;
+          }
+        }, { capture: true });
+
+        // Forward sticky modifiers (Shift, Alt, Ctrl) to canvas pointer events
+        ['pointerdown', 'pointermove'].forEach(type => {
+          canvas.addEventListener(type, (e) => {
+            if (modifiersState.Shift) Object.defineProperty(e, 'shiftKey', { value: true, configurable: true });
+            if (modifiersState.Alt) Object.defineProperty(e, 'altKey', { value: true, configurable: true });
+            if (modifiersState.Ctrl) Object.defineProperty(e, 'ctrlKey', { value: true, configurable: true });
+          }, { capture: true });
+        });
+
+      } catch (err) {
+        console.warn('Could not hook iframe events:', err);
+      }
+    }
+
     function toggleHeaderCollapse() {
       const header = document.getElementById('top-header');
       const mainWorkspace = document.getElementById('main-workspace');
@@ -300,6 +754,7 @@ npx @bubblewrap/cli build</pre>
 
       const frame = document.getElementById('engine-frame');
       frame.src = 'apps/' + appName + '/?webgl';
+      setTimeout(hookIframeEvents, 1200);
     }
 
     function openDirectApp() {
@@ -347,6 +802,25 @@ npx @bubblewrap/cli build</pre>
       toggleAiModal();
       alert('Downloaded "ai_design.svg"! You can now Drag & Drop or use File → Open inside VectorCraft/PhotoCraft.');
     }
+
+    // Auto-detect touchscreen device and initialize mode
+    window.addEventListener('DOMContentLoaded', () => {
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 820);
+      const savedMode = localStorage.getItem('craft_touch_mode');
+      
+      if (savedMode === '1' || (savedMode === null && isTouchDevice)) {
+        toggleTouchMode(true);
+      } else {
+        toggleTouchMode(false);
+      }
+
+      // Hook iframe when loaded
+      const iframe = document.getElementById('engine-frame');
+      iframe?.addEventListener('load', () => {
+        setTimeout(hookIframeEvents, 800);
+      });
+      setTimeout(hookIframeEvents, 1500);
+    });
 
     // Register Service Worker for 100% Offline Standalone Android Tablet Usage
     if ('serviceWorker' in navigator) {
