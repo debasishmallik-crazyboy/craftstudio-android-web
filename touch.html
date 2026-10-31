@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1e27">
+  <title>Debasish Reverse Craft Studio — Craft Web Integration Project One</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="stylesheet" href="css/studio.css?v=2.5">
+  <style>
+    /* Critical Mobile & Layout Invariants (Zero-Overlap Guarantee) */
+    :root {
+      --header-height: 40px;
+    }
+    #top-header {
+      height: var(--header-height) !important;
+      min-height: var(--header-height) !important;
+      max-height: var(--header-height) !important;
+      overflow: hidden !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 0 8px !important;
+      z-index: 100 !important;
+      box-sizing: border-box !important;
+      background-color: #171c26 !important;
+      border-bottom: 1px solid #2e384d !important;
+    }
+    #top-header.collapsed {
+      display: none !important;
+    }
+    .floating-header-btn {
+      position: fixed;
+      top: 6px;
+      right: 6px;
+      z-index: 9999;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      padding: 3px 8px;
+      border-radius: 16px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .brand-section {
+      display: flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      min-width: 0 !important;
+      overflow: hidden !important;
+      flex-shrink: 1 !important;
+    }
+    .brand-logo {
+      font-weight: 600 !important;
+      font-size: 10px !important;
+      letter-spacing: -0.2px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 3px !important;
+      color: #94a3b8 !important;
+      white-space: nowrap !important;
+      min-width: 0 !important;
+      overflow: hidden !important;
+      flex-shrink: 0 !important;
+    }
+    .brand-logo .brand-text {
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      color: #cbd5e1 !important;
+      font-size: 10px !important;
+    }
+    .brand-logo span.badge-pro {
+      background: rgba(56, 189, 248, 0.2) !important;
+      border: 1px solid rgba(56, 189, 248, 0.4) !important;
+      color: #38bdf8 !important;
+      font-size: 7.5px !important;
+      font-weight: 700 !important;
+      padding: 1px 4px !important;
+      border-radius: 3px !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.2px !important;
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+    }
+    .mode-switcher {
+      display: flex !important;
+      background: #0f131a !important;
+      border-radius: 6px !important;
+      padding: 2px !important;
+      border: 1px solid #2e384d !important;
+      flex-shrink: 0 !important;
+    }
+    .mode-btn {
+      padding: 3px 7px !important;
+      font-size: 11px !important;
+      white-space: nowrap !important;
+      border-radius: 4px !important;
+      gap: 4px !important;
+    }
+    .header-actions {
+      display: flex !important;
+      align-items: center !important;
+      gap: 4px !important;
+      flex-shrink: 0 !important;
+    }
+    .header-actions .btn {
+      padding: 3px 6px !important;
+      font-size: 11px !important;
+      height: 26px !important;
+      white-space: nowrap !important;
+    }
+    #main-workspace {
+      width: 100% !important;
+      height: calc(100vh - var(--header-height)) !important;
+      position: relative !important;
+      overflow: hidden !important;
+    }
+    #engine-frame {
+      width: 100% !important;
+      height: 100% !important;
+      border: none !important;
+      display: block !important;
+      background: #262626 !important;
+      touch-action: none !important;
+    }
+    /* Touchscreen Pro Companion Dock Inline Styles */
+    .touch-dock {
+      position: fixed !important;
+      top: 46px !important;
+      z-index: 850 !important;
+      background: rgba(15, 23, 42, 0.94) !important;
+      backdrop-filter: blur(14px) !important;
+      -webkit-backdrop-filter: blur(14px) !important;
+      border: 1px solid rgba(56, 189, 248, 0.4) !important;
+      border-radius: 12px !important;
+      padding: 8px !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 7px !important;
+      width: 190px !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      touch-action: manipulation !important;
+    }
+    .touch-dock.touch-dock-left { left: 8px !important; right: auto !important; }
+    .touch-dock.touch-dock-right { right: 8px !important; left: auto !important; }
+    .touch-dock.dock-hidden { display: none !important; }
+    .touch-dock.dock-minimized { display: none !important; }
+
+    .btn-touch-toggle.active {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      border: 1px solid #34d399 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+    }
+    .touch-label {
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      display: inline !important;
+    }
+    @media (max-width: 900px) {
+      .app-badge { display: none !important; }
+      .action-text { display: none !important; }
+      .brand-logo { font-size: 11px !important; }
+      .touch-label { display: inline !important; }
+    }
+    @media (max-width: 640px) {
+      :root { --header-height: 36px; }
+      .badge-pro { display: none !important; }
+      .brand-logo .brand-text { max-width: 82px !important; }
+      .mode-label { display: none !important; }
+      #btn-tablet-guide { display: none !important; }
+      .touch-label { display: inline !important; font-size: 9.5px !important; }
+      .touch-dock { width: 175px !important; top: 42px !important; padding: 6px !important; gap: 5px !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app-container">
+    
+    <!-- Top Global Header -->
+    <header id="top-header">
+      <div class="brand-section">
+        <div class="brand-logo" title="Debasish Reverse Craft Studio">
+          <span class="brand-icon">⚡</span>
+          <span class="brand-text">Debasish Craft</span>
+          <span class="badge-pro">v1.0</span>
+        </div>
+        
+        <!-- Official ArtCraft App Switcher -->
+        <div class="mode-switcher">
+          <button id="tab-vectorcraft" class="mode-btn active vector-mode" onclick="switchApp('vectorcraft')" title="VectorCraft (Illustrator / CorelDRAW alternative)">
+            <span class="mode-icon">🐉</span>
+            <span class="mode-label">VectorCraft</span>
+            <span class="app-badge">Illustrator/Corel</span>
+          </button>
+          <button id="tab-photocraft" class="mode-btn raster-mode" onclick="switchApp('photocraft')" title="PhotoCraft (Photoshop alternative)">
+            <span class="mode-icon">🦊</span>
+            <span class="mode-label">PhotoCraft</span>
+            <span class="app-badge">Photoshop</span>
+          </button>
+          <button id="tab-designcraft" class="mode-btn" onclick="switchApp('designcraft')" title="DesignCraft (InDesign / Canva alternative)">
+            <span class="mode-icon">🐱</span>
+            <span class="mode-label">DesignCraft</span>
+            <span class="app-badge">InDesign</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="header-actions">
+        <!-- Touch Mode vs Desktop Mode Toggle -->
+        <button id="btn-touch-mode-toggle" class="btn btn-touch-toggle active" onclick="toggleTouchMode()" title="Toggle Touchscreen Pro Tablet Mode (Modifiers & Actions)">
+          <span class="touch-icon">👆</span> <span class="touch-label">Touch Pro</span>
+        </button>
+        <button id="btn-toggle-fullscreen" class="btn" onclick="toggleHeaderCollapse()" title="Toggle Fullscreen Canvas (Maximize workspace)">
+          📐 <span class="action-text">Maximize</span>
+        </button>
+        <button id="btn-open-direct" class="btn" onclick="openDirectApp()" title="Open Current App in Fullscreen Window">
+          ↗️ <span class="action-text">Full Window</span>
+        </button>
+        <button id="btn-chatgpt-ai" class="btn btn-ai" onclick="toggleAiModal()" title="ChatGPT & Gemini AI Generative Bridge">
+          🤖 <span class="action-text">AI</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Floating Restore Button when header is minimized -->
+    <button id="floating-restore-header" class="floating-header-btn" onclick="toggleHeaderCollapse()" title="Show Studio Menu">
+      ⚡ Studio Menu 🔽
+    </button>
+
+    <!-- Toast Notification for Touch Feedback & Actions -->
+    <div id="studio-toast" class="studio-toast"></div>
+
+    <!-- Touchscreen Pro Companion Dock (Virtual Modifiers & Shortcuts) -->
+    <div id="touch-companion-dock" class="touch-dock touch-dock-left">
+      <!-- Header: Drag Handle, Side Flip & Minimize -->
+      <div class="dock-header">
+        <span class="dock-title">👆 TOUCH PRO</span>
+        <div class="dock-header-actions">
+          <button class="dock-icon-btn" onclick="toggleDockSide()" title="Flip Dock to Left / Right Edge">⇋</button>
+          <button class="dock-icon-btn" onclick="toggleDockCollapse()" title="Minimize Dock">─</button>
+        </div>
+      </div>
+
+      <!-- Sticky Modifier Keys (Shift, Alt, Ctrl) -->
+      <div class="dock-section">
+        <div class="dock-label">MODIFIERS</div>
+        <div class="dock-btn-row">
+          <button id="mod-shift" class="dock-btn dock-mod" onclick="toggleModifier('Shift')" title="Shift: Constrain proportions / straight lines">
+            <span>⇧ Shift</span>
+            <span class="mod-status">OFF</span>
+          </button>
+          <button id="mod-alt" class="dock-btn dock-mod" onclick="toggleModifier('Alt')" title="Alt: Center transform / clone sample / duplicate on drag">
+            <span>⌥ Alt</span>
+            <span class="mod-status">OFF</span>
+          </button>
+          <button id="mod-ctrl" class="dock-btn dock-mod" onclick="toggleModifier('Ctrl')" title="Ctrl: Multi-select / Deep select">
+            <span>⌃ Ctrl</span>
+            <span class="mod-status">OFF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons (Ctrl+J, Del, Right-Click, Undo/Redo, etc.) -->
+      <div class="dock-section">
+        <div class="dock-label">ACTIONS</div>
+        <div class="dock-btn-grid">
+          <button class="dock-btn dock-action btn-ctrl-j" onclick="dispatchCtrlJ()" title="Ctrl+J: Layer via Copy (Selected object/pixels to new transparent layer)">
+            <span class="action-icon">📑</span>
+            <span>Ctrl+J (Copy Layer)</span>
+          </button>
+          <button class="dock-btn dock-action btn-del" onclick="dispatchDelete()" title="Del: Delete selected object / layer">
+            <span class="action-icon">🗑️</span>
+            <span>Delete</span>
+          </button>
+          <button id="btn-right-click-armed" class="dock-btn dock-action" onclick="armRightClick()" title="Right-Click: Tap here, then tap canvas to open context menu (or Long-press canvas)">
+            <span class="action-icon">🖱️</span>
+            <span>Right Click</span>
+          </button>
+          <button class="dock-btn dock-action" onclick="dispatchDeselect()" title="Ctrl+D: Deselect marquee">
+            <span class="action-icon">🚫</span>
+            <span>Deselect</span>
+          </button>
+          <button class="dock-btn dock-action" onclick="dispatchUndo()" title="Ctrl+Z: Undo last action">
+            <span class="action-icon">↺</span>
+            <span>Undo</span>
+          </button>
+          <button class="dock-btn dock-action" onclick="dispatchRedo()" title="Ctrl+Y: Redo last action">
+            <span class="action-icon">↻</span>
+            <span>Redo</span>
+          </button>
+          <button id="btn-pan-armed" class="dock-btn dock-action" onclick="togglePanTool()" title="Space: Hold to pan/scroll canvas with one finger">
+            <span class="action-icon">✋</span>
+            <span>Pan Canvas</span>
+          </button>
+          <button class="dock-btn dock-action" onclick="dispatchTransform()" title="Ctrl+T: Free Transform bounding box">
+            <span class="action-icon">🔄</span>
+            <span>Transform</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Touch Puck (Shown when dock is minimized) -->
+    <button id="floating-touch-puck" class="floating-touch-puck" onclick="toggleDockCollapse()" title="Show Touch Modifiers (Shift/Alt/Ctrl+J)">
+      👆 Modifiers
+    </button>
+
+    <!-- Main Viewport embedding the Official Rust WebAssembly Engines -->
+    <main id="main-workspace" style="width: 100%; height: calc(100vh - var(--header-height));">
+      <iframe 
+        id="engine-frame" 
+        src="apps/vectorcraft/?webgl" 
+        title="ArtCraft Suite Engine" 
+        allow="fullscreen; clipboard-read; clipboard-write; download" 
+        allowfullscreen>
+      </iframe>
+    </main>
+  </div>
+
+  <!-- Modal: ChatGPT & Gemini Generative AI Bridge -->
+  <div id="modal-ai" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">🤖 ChatGPT & Gemini Generative Design Bridge</div>
+        <button class="icon-btn" onclick="toggleAiModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Just like Canva in ChatGPT, you can command ChatGPT Plus / Go or Gemini to generate editable designs, layouts, or color grading scripts, and open them directly in the official <strong>VectorCraft</strong>, <strong>PhotoCraft</strong>, or <strong>DesignCraft</strong> engines!
+        </p>
+
+        <div style="background: var(--bg-dark); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+          <strong style="color: #38bdf8;">Quick Prompts for ChatGPT / Gemini:</strong>
+          <ul style="margin-left: 20px; margin-top: 8px; font-size: 12px; line-height: 1.6; color: #cbd5e1;">
+            <li><em>"Generate an SVG vector logo for Medical Service Centre with clean bezier curves."</em></li>
+            <li><em>"Create an A4 two-column deputation letter layout with official header."</em></li>
+            <li><em>"Write a PhotoCraft adjustment action list for cinematic color grade: curves, vibrance +20, contrast +15."</em></li>
+          </ul>
+        </div>
+
+        <div>
+          <label style="font-weight: 600; display: block; margin-bottom: 6px;">Load AI Design / SVG into Active Studio:</label>
+          <textarea id="ai-input-text" class="json-textarea" placeholder="Paste SVG, .vectorcraft JSON, or Action list here..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="btn" onclick="loadSampleSvg()">Load Medical Camp Sample</button>
+          <button class="btn btn-primary" onclick="injectIntoStudio()">Load into Canvas</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Tablet Install & APK Guide -->
+  <div id="modal-tablet" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">📱 Android Tablet Installation Guide</div>
+        <button class="icon-btn" onclick="toggleTabletModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <h4 style="color: #ffffff;">Option 1: Instant PWA Install (Recommended — 100% Free Forever)</h4>
+        <ol style="margin-left: 20px; line-height: 1.6;">
+          <li>Connect your Android Tablet to the same Wi-Fi as your PC.</li>
+          <li>Open Chrome on your tablet and go to: <strong id="tablet-local-ip">http://192.168.1.3:3000/</strong></li>
+          <li>Tap the Chrome menu (<strong>⋮</strong> in top right corner).</li>
+          <li>Tap <strong>"Add to Home screen" / "Install app"</strong>.</li>
+          <li>The app will install as a standalone full-screen app with full S-Pen & touch support!</li>
+        </ol>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 8px 0;">
+
+        <h4 style="color: #ffffff;">Option 2: Standalone Android APK</h4>
+        <p>The official ArtCraft suite compiles pure Rust to WebAssembly. You can generate a native <code>.apk</code> wrapper using Bubblewrap or Capacitor:</p>
+        <pre style="background: #000; padding: 10px; border-radius: 6px; font-size: 11px; overflow-x: auto; color: #10a37f;">npx @bubblewrap/cli init --manifest=http://192.168.1.3:3000/manifest.json
+npx @bubblewrap/cli build</pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentApp = 'vectorcraft';
+
+    // =========================================================================
+    // Touchscreen Pro Companion Engine & Virtual Modifiers
+    // =========================================================================
+    let isTouchModeActive = false;
+    let isDockCollapsed = false;
+    let isDockOnRight = false;
+    let isRightClickArmed = false;
+    let isPanArmed = false;
+
+    let modifiersState = {
+      Shift: false,
+      Alt: false,
+      Ctrl: false
+    };
+
+    function showToast(msg) {
+      const toast = document.getElementById('studio-toast');
+      if (!toast) return;
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1500);
+    }
+
+    function toggleTouchMode(force) {
+      if (typeof force === 'boolean') {
+        isTouchModeActive = force;
+      } else {
+        isTouchModeActive = !isTouchModeActive;
+      }
+      localStorage.setItem('craft_touch_mode', isTouchModeActive ? '1' : '0');
+
+      const btn = document.getElementById('btn-touch-mode-toggle');
+      const dock = document.getElementById('touch-companion-dock');
+      const puck = document.getElementById('floating-touch-puck');
+
+      if (isTouchModeActive) {
+        btn?.classList.add('active');
+        if (isDockCollapsed) {
+          dock?.classList.add('dock-minimized');
+          if (puck) puck.style.display = 'flex';
+        } else {
+          dock?.classList.remove('dock-hidden');
+          dock?.classList.remove('dock-minimized');
+          if (puck) puck.style.display = 'none';
+        }
+        hookIframeEvents();
+        showToast('👆 Touchscreen Pro Mode: ON');
+      } else {
+        btn?.classList.remove('active');
+        dock?.classList.add('dock-hidden');
+        if (puck) puck.style.display = 'none';
+        resetAllModifiers();
+        showToast('🖱️ Desktop Keyboard & Mouse Mode');
+      }
+    }
+
+    function toggleDockCollapse() {
+      isDockCollapsed = !isDockCollapsed;
+      const dock = document.getElementById('touch-companion-dock');
+      const puck = document.getElementById('floating-touch-puck');
+
+      if (isDockCollapsed) {
+        dock?.classList.add('dock-minimized');
+        if (puck) puck.style.display = 'flex';
+      } else {
+        dock?.classList.remove('dock-minimized');
+        dock?.classList.remove('dock-hidden');
+        if (puck) puck.style.display = 'none';
+      }
+    }
+
+    function toggleDockSide() {
+      isDockOnRight = !isDockOnRight;
+      const dock = document.getElementById('touch-companion-dock');
+      const puck = document.getElementById('floating-touch-puck');
+
+      if (isDockOnRight) {
+        dock?.classList.remove('touch-dock-left');
+        dock?.classList.add('touch-dock-right');
+        if (puck) { puck.style.left = 'auto'; puck.style.right = '10px'; }
+        showToast('Dock moved to Right Side');
+      } else {
+        dock?.classList.remove('touch-dock-right');
+        dock?.classList.add('touch-dock-left');
+        if (puck) { puck.style.right = 'auto'; puck.style.left = '10px'; }
+        showToast('Dock moved to Left Side');
+      }
+    }
+
+    function toggleModifier(mod) {
+      modifiersState[mod] = !modifiersState[mod];
+      const btn = document.getElementById('mod-' + mod.toLowerCase());
+      const statusEl = btn?.querySelector('.mod-status');
+
+      if (modifiersState[mod]) {
+        btn?.classList.add('active');
+        if (statusEl) statusEl.textContent = 'ON';
+        sendModifierEvent(mod, 'keydown');
+        showToast(`⇧ ${mod} LOCKED ON (Active for touch drag/scale)`);
+      } else {
+        btn?.classList.remove('active');
+        if (statusEl) statusEl.textContent = 'OFF';
+        sendModifierEvent(mod, 'keyup');
+        showToast(`⇧ ${mod} Unlocked`);
+      }
+    }
+
+    function resetAllModifiers() {
+      ['Shift', 'Alt', 'Ctrl'].forEach(mod => {
+        if (modifiersState[mod]) {
+          modifiersState[mod] = false;
+          const btn = document.getElementById('mod-' + mod.toLowerCase());
+          const statusEl = btn?.querySelector('.mod-status');
+          btn?.classList.remove('active');
+          if (statusEl) statusEl.textContent = 'OFF';
+          sendModifierEvent(mod, 'keyup');
+        }
+      });
+    }
+
+    function sendModifierEvent(mod, type) {
+      const iframe = document.getElementById('engine-frame');
+      const win = iframe?.contentWindow;
+      const canvas = iframe?.contentDocument?.querySelector('canvas');
+      if (!win || !canvas) return;
+
+      const keyMap = {
+        Shift: { key: 'Shift', code: 'ShiftLeft' },
+        Alt: { key: 'Alt', code: 'AltLeft' },
+        Ctrl: { key: 'Control', code: 'ControlLeft' }
+      };
+      const m = keyMap[mod];
+      if (!m) return;
+
+      const evt = new win.KeyboardEvent(type, {
+        key: m.key,
+        code: m.code,
+        ctrlKey: modifiersState.Ctrl,
+        shiftKey: modifiersState.Shift,
+        altKey: modifiersState.Alt,
+        bubbles: true,
+        cancelable: true
+      });
+      canvas.focus();
+      canvas.dispatchEvent(evt);
+      win.dispatchEvent(evt);
+    }
+
+    function dispatchKeyShortcut(key, code, ctrl = false, shift = false, alt = false) {
+      const iframe = document.getElementById('engine-frame');
+      const win = iframe?.contentWindow;
+      const canvas = iframe?.contentDocument?.querySelector('canvas');
+      if (!win || !canvas) return;
+
+      canvas.focus();
+      const down = new win.KeyboardEvent('keydown', {
+        key: key,
+        code: code,
+        ctrlKey: ctrl,
+        shiftKey: shift,
+        altKey: alt,
+        bubbles: true,
+        cancelable: true
+      });
+      const up = new win.KeyboardEvent('keyup', {
+        key: key,
+        code: code,
+        ctrlKey: ctrl,
+        shiftKey: shift,
+        altKey: alt,
+        bubbles: true,
+        cancelable: true
+      });
+      canvas.dispatchEvent(down);
+      win.dispatchEvent(down);
+      setTimeout(() => {
+        win.dispatchEvent(up);
+        canvas.dispatchEvent(up);
+      }, 40);
+    }
+
+    function dispatchCtrlJ() {
+      // PhotoCraft: Layer via Copy (Selected pixels to new transparent layer)
+      // VectorCraft: Duplicate selected object
+      dispatchKeyShortcut('j', 'KeyJ', true);
+      showToast('📑 Ctrl+J: Layer via Copy (New Layer Created!)');
+    }
+
+    function dispatchDelete() {
+      dispatchKeyShortcut('Delete', 'Delete');
+      showToast('🗑️ Delete: Selection/Layer Removed');
+    }
+
+    function dispatchDeselect() {
+      dispatchKeyShortcut('d', 'KeyD', true);
+      showToast('🚫 Deselect (Ctrl+D)');
+    }
+
+    function dispatchUndo() {
+      dispatchKeyShortcut('z', 'KeyZ', true);
+      showToast('↺ Undo (Ctrl+Z)');
+    }
+
+    function dispatchRedo() {
+      dispatchKeyShortcut('y', 'KeyY', true);
+      showToast('↻ Redo (Ctrl+Y)');
+    }
+
+    function dispatchTransform() {
+      dispatchKeyShortcut('t', 'KeyT', true);
+      showToast('🔄 Free Transform (Ctrl+T)');
+    }
+
+    function armRightClick() {
+      isRightClickArmed = !isRightClickArmed;
+      const btn = document.getElementById('btn-right-click-armed');
+      if (isRightClickArmed) {
+        btn?.classList.add('armed');
+        showToast('🖱️ Right Click Armed: Tap anywhere on canvas');
+      } else {
+        btn?.classList.remove('armed');
+        showToast('🖱️ Right Click Disarmed');
+      }
+    }
+
+    function togglePanTool() {
+      isPanArmed = !isPanArmed;
+      const btn = document.getElementById('btn-pan-armed');
+      const iframe = document.getElementById('engine-frame');
+      const win = iframe?.contentWindow;
+      const canvas = iframe?.contentDocument?.querySelector('canvas');
+      if (!win || !canvas) return;
+
+      if (isPanArmed) {
+        btn?.classList.add('active');
+        const down = new win.KeyboardEvent('keydown', {
+          key: ' ',
+          code: 'Space',
+          bubbles: true,
+          cancelable: true
+        });
+        canvas.focus();
+        canvas.dispatchEvent(down);
+        win.dispatchEvent(down);
+        showToast('✋ Pan Canvas Locked (Drag to pan)');
+      } else {
+        btn?.classList.remove('active');
+        const up = new win.KeyboardEvent('keyup', {
+          key: ' ',
+          code: 'Space',
+          bubbles: true,
+          cancelable: true
+        });
+        canvas.dispatchEvent(up);
+        win.dispatchEvent(up);
+        showToast('✋ Pan Canvas Unlocked');
+      }
+    }
+
+    function triggerRightClickAt(x, y) {
+      const iframe = document.getElementById('engine-frame');
+      const win = iframe?.contentWindow;
+      const canvas = iframe?.contentDocument?.querySelector('canvas');
+      if (!win || !canvas) return;
+
+      const down = new win.PointerEvent('pointerdown', {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        button: 2,
+        buttons: 2,
+        pointerType: 'mouse'
+      });
+      const up = new win.PointerEvent('pointerup', {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        button: 2,
+        buttons: 0,
+        pointerType: 'mouse'
+      });
+      const ctx = new win.MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        button: 2
+      });
+
+      canvas.dispatchEvent(down);
+      canvas.dispatchEvent(up);
+      canvas.dispatchEvent(ctx);
+    }
+
+    function hookIframeEvents() {
+      const iframe = document.getElementById('engine-frame');
+      if (!iframe) return;
+
+      try {
+        const doc = iframe.contentDocument;
+        const win = iframe.contentWindow;
+        if (!doc || !win) return;
+        const canvas = doc.querySelector('canvas');
+        if (!canvas) return;
+
+        // Long-press right click detection on touch
+        let touchTimer = null;
+        let startPos = { x: 0, y: 0 };
+
+        canvas.addEventListener('touchstart', (e) => {
+          if (!isTouchModeActive) return;
+          if (e.touches.length === 1) {
+            const t = e.touches[0];
+            startPos = { x: t.clientX, y: t.clientY };
+            touchTimer = setTimeout(() => {
+              if (navigator.vibrate) navigator.vibrate(50);
+              triggerRightClickAt(startPos.x, startPos.y);
+              showToast('🖱️ Right-Click Context Menu');
+            }, 450);
+          }
+        }, { passive: true });
+
+        canvas.addEventListener('touchmove', (e) => {
+          if (touchTimer && e.touches.length > 0) {
+            const t = e.touches[0];
+            const dist = Math.hypot(t.clientX - startPos.x, t.clientY - startPos.y);
+            if (dist > 10) {
+              clearTimeout(touchTimer);
+              touchTimer = null;
+            }
+          }
+        }, { passive: true });
+
+        canvas.addEventListener('touchend', () => {
+          if (touchTimer) {
+            clearTimeout(touchTimer);
+            touchTimer = null;
+          }
+        }, { passive: true });
+
+        // Intercept armed right click
+        canvas.addEventListener('pointerdown', (e) => {
+          if (isRightClickArmed) {
+            isRightClickArmed = false;
+            document.getElementById('btn-right-click-armed')?.classList.remove('armed');
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            triggerRightClickAt(e.clientX, e.clientY);
+            showToast('🖱️ Context Menu Opened');
+            return;
+          }
+        }, { capture: true });
+
+        // Forward sticky modifiers (Shift, Alt, Ctrl) to canvas pointer events
+        ['pointerdown', 'pointermove'].forEach(type => {
+          canvas.addEventListener(type, (e) => {
+            if (modifiersState.Shift) Object.defineProperty(e, 'shiftKey', { value: true, configurable: true });
+            if (modifiersState.Alt) Object.defineProperty(e, 'altKey', { value: true, configurable: true });
+            if (modifiersState.Ctrl) Object.defineProperty(e, 'ctrlKey', { value: true, configurable: true });
+          }, { capture: true });
+        });
+
+      } catch (err) {
+        console.warn('Could not hook iframe events:', err);
+      }
+    }
+
+    function toggleHeaderCollapse() {
+      const header = document.getElementById('top-header');
+      const mainWorkspace = document.getElementById('main-workspace');
+      const restoreBtn = document.getElementById('floating-restore-header');
+      
+      if (header.classList.contains('collapsed')) {
+        header.classList.remove('collapsed');
+        restoreBtn.style.display = 'none';
+        mainWorkspace.style.height = 'calc(100vh - var(--header-height))';
+      } else {
+        header.classList.add('collapsed');
+        restoreBtn.style.display = 'flex';
+        mainWorkspace.style.height = '100vh';
+      }
+    }
+
+    function switchApp(appName) {
+      currentApp = appName;
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + appName).classList.add('active');
+
+      const frame = document.getElementById('engine-frame');
+      frame.src = 'apps/' + appName + '/?webgl';
+      setTimeout(hookIframeEvents, 1200);
+    }
+
+    function openDirectApp() {
+      window.open('apps/' + currentApp + '/?webgl', '_blank');
+    }
+
+    function toggleAiModal() {
+      const modal = document.getElementById('modal-ai');
+      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function toggleTabletModal() {
+      const modal = document.getElementById('modal-tablet');
+      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function loadSampleSvg() {
+      const sample = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <rect width="100%" height="100%" fill="#0b192c"/>
+  <rect x="40" y="40" width="1000" height="250" rx="16" fill="#1e3e62" stroke="#f59e0b" stroke-width="3"/>
+  <text x="540" y="110" font-family="Georgia" font-size="42" font-weight="bold" fill="#ffffff" text-anchor="middle">MEDICAL SERVICE CENTRE</text>
+  <text x="540" y="160" font-family="Georgia" font-size="20" font-weight="bold" fill="#f87171" text-anchor="middle">HOLD HIGH THE NOBLE BANNER OF MEDICAL ETHICS</text>
+  <text x="540" y="235" font-family="Georgia" font-size="34" font-weight="bold" fill="#facc15" text-anchor="middle">MEGA FREE HEALTH &amp; EYE CHECK-UP CAMP</text>
+  <rect x="100" y="350" width="420" height="80" rx="40" fill="#dc2626"/>
+  <text x="310" y="402" font-family="Arial" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">📅 SUNDAY, 15 NOV 2026</text>
+  <rect x="560" y="350" width="420" height="80" rx="40" fill="#0284c7"/>
+  <text x="770" y="402" font-family="Arial" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">⏰ 9:00 AM TO 4:00 PM</text>
+</svg>`;
+      document.getElementById('ai-input-text').value = sample;
+    }
+
+    function injectIntoStudio() {
+      const text = document.getElementById('ai-input-text').value.trim();
+      if (!text) return alert('Please paste an SVG or design text.');
+      
+      // Download as temporary file to open in ArtCraft app
+      const blob = new Blob([text], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ai_design.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      toggleAiModal();
+      alert('Downloaded "ai_design.svg"! You can now Drag & Drop or use File → Open inside VectorCraft/PhotoCraft.');
+    }
+
+    // Auto-detect touchscreen device and initialize mode (Immediate Lifecycle Execution)
+    function initTouchMode() {
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 1024);
+      const savedMode = localStorage.getItem('craft_touch_mode');
+      
+      // Default to Touch Pro ON unless explicitly turned off by desktop user
+      if (savedMode === '0') {
+        toggleTouchMode(false);
+      } else {
+        toggleTouchMode(true);
+      }
+
+      // Hook iframe when loaded
+      const iframe = document.getElementById('engine-frame');
+      iframe?.addEventListener('load', () => {
+        setTimeout(hookIframeEvents, 600);
+      });
+      setTimeout(hookIframeEvents, 1000);
+      setTimeout(hookIframeEvents, 2500);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTouchMode);
+    } else {
+      initTouchMode();
+    }
+
+    // Register Service Worker with instant update check
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js?v=3.5')
+        .then(reg => {
+          reg.update();
+          console.log('River Studio Service Worker active:', reg.scope);
+        })
+        .catch(err => console.warn('SW:', err));
+    }
+  </script>
+</body>
+</html>
