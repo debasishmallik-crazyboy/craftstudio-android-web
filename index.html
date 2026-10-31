@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CraftStudio — DesignCraft, VectorCraft & PhotoCraft for Android Tablet & Web</title>
+  
+  <!-- PWA Manifest & Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#10a37f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+
+  <link rel="stylesheet" href="css/studio.css">
+</head>
+<body>
+  <div id="app-container">
+    
+    <!-- Top Header -->
+    <header id="top-header">
+      <div class="brand-section">
+        <div class="brand-logo">
+          🎨 CraftStudio <span class="badge-pro">Pro</span>
+        </div>
+        
+        <!-- Studio Mode Switcher -->
+        <div class="mode-switcher">
+          <button id="mode-vector" class="mode-btn vector-mode active" title="DesignCraft & VectorCraft Mode (CorelDRAW & Illustrator Alternative)">
+            📐 Vector & Layout
+          </button>
+          <button id="mode-raster" class="mode-btn raster-mode" title="PhotoCraft Mode (Photoshop Alternative)">
+            🖼️ PhotoCraft
+          </button>
+        </div>
+      </div>
+
+      <!-- Document Title & Canvas Size -->
+      <div class="doc-info">
+        <input type="text" id="doc-title" class="doc-title-input" value="Medical Camp Flyer" placeholder="Project Name">
+        <select id="preset-select" class="preset-select">
+          <option value="1080x1350" selected>Flyer / Portrait (1080 × 1350)</option>
+          <option value="1280x720">YouTube Thumbnail (1280 × 720)</option>
+          <option value="1080x1080">Square Social Post (1080 × 1080)</option>
+          <option value="794x1123">A4 Document / Print (794 × 1123)</option>
+          <option value="1080x1920">Story / Reels (1080 × 1920)</option>
+        </select>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="header-actions">
+        <button id="btn-import-ai" class="btn btn-ai" title="Import from ChatGPT Plus/Go or JSON">
+          🤖 ChatGPT Import
+        </button>
+        <button id="btn-qr-sync" class="btn" title="Transfer Design to Tablet / Mobile via QR Code">
+          📲 Tablet Sync
+        </button>
+        <button id="btn-export" class="btn btn-primary" title="Export High-Res PNG, SVG, or Print PDF">
+          📤 Export
+        </button>
+      </div>
+    </header>
+
+    <!-- Contextual Property Bar -->
+    <div id="property-bar">
+      <div class="prop-group">
+        <span class="prop-label">Color:</span>
+        <input type="color" id="prop-fill" value="#ffffff">
+      </div>
+      
+      <div class="prop-divider"></div>
+
+      <div class="prop-group">
+        <span class="prop-label">Font:</span>
+        <select id="prop-font-family" class="prop-input">
+          <option value="Georgia" selected>Georgia (Editorial Serif)</option>
+          <option value="Arial">Arial (Clean Sans)</option>
+          <option value="'Segoe UI', Roboto, sans-serif">System Sans</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+          <option value="'Courier New', monospace">Courier Monospace</option>
+        </select>
+        <input type="number" id="prop-font-size" class="prop-input prop-input-number" value="36" min="8" max="200">
+        <button id="prop-bold" class="btn" style="padding: 4px 8px; font-weight: bold;">B</button>
+      </div>
+
+      <div class="prop-divider"></div>
+
+      <div class="prop-group">
+        <span class="prop-label">Opacity:</span>
+        <input type="range" id="prop-opacity" min="0" max="1" step="0.05" value="1.0" style="width: 80px;">
+      </div>
+
+      <div class="prop-divider"></div>
+
+      <div class="prop-group">
+        <button id="btn-undo" class="btn" title="Undo (Ctrl+Z)">↩️ Undo</button>
+        <button id="btn-redo" class="btn" title="Redo (Ctrl+Y)">↪️ Redo</button>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div id="main-workspace">
+      
+      <!-- Left Toolbar (Touch & Tablet Optimized) -->
+      <div id="toolbar">
+        <button class="tool-btn active" data-tool="select" title="Selection Tool (V)">
+          ↖️<span class="hotkey">V</span>
+        </button>
+        <button class="tool-btn" data-tool="text" title="Text Tool (T)">
+          🔤<span class="hotkey">T</span>
+        </button>
+        <button class="tool-btn" data-tool="rect" title="Rectangle Tool (M)">
+          ⬛<span class="hotkey">M</span>
+        </button>
+        <button class="tool-btn" data-tool="brush" title="S-Pen / Brush Tool (B)">
+          🖌️<span class="hotkey">B</span>
+        </button>
+        <div class="tool-sep"></div>
+        <button class="tool-btn" data-tool="hand" title="Hand / Pan Canvas (H)">
+          ✋<span class="hotkey">H</span>
+        </button>
+      </div>
+
+      <!-- Canvas Viewport -->
+      <div id="canvas-viewport">
+        <div id="canvas-container">
+          <canvas id="paint-canvas"></canvas>
+          <div id="selection-overlay">
+            <div class="handle handle-nw"></div>
+            <div class="handle handle-ne"></div>
+            <div class="handle handle-se"></div>
+            <div class="handle handle-sw"></div>
+          </div>
+        </div>
+
+        <!-- Floating Tablet Zoom Bar -->
+        <div class="floating-zoom-bar">
+          <button id="btn-zoom-out">➖</button>
+          <span id="zoom-val" class="zoom-level">80%</span>
+          <button id="btn-zoom-in">➕</button>
+          <button id="btn-zoom-reset" style="font-size: 11px;">Fit</button>
+        </div>
+      </div>
+
+      <!-- Right Inspector -->
+      <aside id="inspector">
+        <div class="inspector-tabs">
+          <button class="tab-btn active" data-tab="tab-layers">📑 Layers</button>
+          <button class="tab-btn" data-tab="tab-chatgpt">🤖 ChatGPT</button>
+        </div>
+
+        <!-- Tab 1: Layers -->
+        <div id="tab-layers" class="tab-content active">
+          <div id="layer-list" class="layer-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Tab 2: ChatGPT Bridge -->
+        <div id="tab-chatgpt" class="tab-content">
+          <h4 style="color: #ffffff; margin-bottom: 8px;">Direct ChatGPT Transfer</h4>
+          <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 12px;">
+            ChatGPT generates a 1-click launch link or JSON document. Paste it below or tap the direct link from your chat to edit instantly!
+          </p>
+          <button id="btn-load-sample-1" class="btn btn-ai" style="width: 100%; margin-bottom: 8px;">
+            🏥 Medical Camp Poster
+          </button>
+          <button id="btn-load-sample-2" class="btn" style="width: 100%; margin-bottom: 8px;">
+            🎬 YouTube Thumbnail
+          </button>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Modal: Import AI Design -->
+  <div id="modal-import" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">🤖 Import Design from ChatGPT</div>
+        <button class="icon-btn modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Paste the JSON design generated by ChatGPT Plus / Go:</p>
+        <textarea id="import-json-text" class="json-textarea" placeholder='{"app": "craftstudio", "canvas": {...}, "layers": [...]}'></textarea>
+        <button id="btn-do-import" class="btn btn-primary" style="align-self: flex-end;">
+          Import to Canvas
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Export High-Res -->
+  <div id="modal-export" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">📤 Export Project</div>
+        <button class="icon-btn modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Select your desired export format:</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <button id="btn-export-png" class="btn">🖼️ PNG Image (1x Web)</button>
+          <button id="btn-export-png2x" class="btn btn-primary">💎 Ultra-HD PNG (2x Print)</button>
+          <button id="btn-export-svg" class="btn">📐 Scalable Vector (SVG)</button>
+          <button id="btn-export-json" class="btn">💾 Project File (.craft.json)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: QR Code Tablet Sync -->
+  <div id="modal-qr" class="modal-overlay">
+    <div class="modal-card" style="text-align: center; align-items: center;">
+      <div class="modal-header" style="width: 100%;">
+        <div class="modal-title">📲 Open Design on Android Tablet</div>
+        <button class="icon-btn modal-close">✕</button>
+      </div>
+      <div class="modal-body" style="align-items: center;">
+        <p>Scan with your tablet or mobile camera to open this editable design instantly:</p>
+        <img id="qr-img" src="" alt="Tablet Transfer QR Code" style="width: 220px; height: 220px; border-radius: 8px; border: 4px solid #ffffff; margin: 10px 0;">
+        <input type="text" id="qr-link-input" class="prop-input" style="width: 100%; text-align: center;" readonly>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

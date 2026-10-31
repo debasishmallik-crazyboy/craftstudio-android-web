@@ -1,0 +1,124 @@
+openapi: 3.0.1
+info:
+  title: CraftStudio Generative Design Bridge API
+  description: Direct editable design transfer API for ChatGPT to CraftStudio (DesignCraft, VectorCraft, PhotoCraft alternative to CorelDRAW, Illustrator & Photoshop on Android Tablet & Web).
+  version: '1.0.0'
+servers:
+  - url: https://debasishmallik-crazyboy.github.io/craftstudio-android-web
+paths:
+  /api/create-design:
+    post:
+      operationId: createDesign
+      summary: Generate an editable vector or raster layout for CraftStudio
+      description: Converts user creative brief into an editable multi-layer design specification and produces a direct 1-click launch link for Android Tablet and Web.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DesignRequest'
+      responses:
+        '200':
+          description: Design created successfully with editable URL and layer manifest
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DesignResponse'
+
+components:
+  schemas:
+    DesignRequest:
+      type: object
+      required:
+        - title
+        - app_mode
+        - canvas
+        - layers
+      properties:
+        title:
+          type: string
+          description: Title of the design project
+        app_mode:
+          type: string
+          enum: [vector, raster]
+          description: DesignCraft/VectorCraft (vector) or PhotoCraft (raster)
+        canvas:
+          type: object
+          required:
+            - width
+            - height
+          properties:
+            width:
+              type: integer
+              default: 1080
+            height:
+              type: integer
+              default: 1080
+            background:
+              type: string
+              default: '#102640'
+        layers:
+          type: array
+          items:
+            $ref: '#/components/schemas/LayerItem'
+    LayerItem:
+      type: object
+      required:
+        - type
+        - x
+        - y
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum: [text, rect, ellipse, star, badge, line, path, image]
+        x:
+          type: number
+        y:
+          type: number
+        width:
+          type: number
+        height:
+          type: number
+        fill:
+          type: string
+        stroke:
+          type: string
+        strokeWidth:
+          type: number
+        opacity:
+          type: number
+          default: 1.0
+        text:
+          type: string
+        fontFamily:
+          type: string
+          default: 'Georgia'
+        fontSize:
+          type: number
+          default: 32
+        fontWeight:
+          type: string
+          enum: [normal, bold, '600', '700']
+        align:
+          type: string
+          enum: [left, center, right]
+        blendMode:
+          type: string
+          default: 'source-over'
+    DesignResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        edit_url:
+          type: string
+          description: Clickable 1-click URL that opens the fully editable design directly on Android tablet or web
+          example: https://debasishmallik-crazyboy.github.io/craftstudio-android-web/#design=...
+        preview_summary:
+          type: string
+          description: Summary of layers generated

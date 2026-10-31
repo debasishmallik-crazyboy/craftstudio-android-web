@@ -1,0 +1,323 @@
+{
+  "templates": [
+    {
+      "id": "medical-camp-poster",
+      "title": "Medical Service Centre - Free Health Camp",
+      "app": "craftstudio",
+      "version": "1.0",
+      "mode": "vector",
+      "canvas": {
+        "width": 1080,
+        "height": 1350,
+        "background": "#0b192c"
+      },
+      "layers": [
+        {
+          "id": "header-card",
+          "name": "Header Background",
+          "type": "rect",
+          "x": 40,
+          "y": 40,
+          "width": 1000,
+          "height": 260,
+          "radius": 16,
+          "fill": "#1e3e62",
+          "stroke": "#f59e0b",
+          "strokeWidth": 3
+        },
+        {
+          "id": "org-title",
+          "name": "Organization Name",
+          "type": "text",
+          "x": 540,
+          "y": 110,
+          "text": "MEDICAL SERVICE CENTRE",
+          "fontFamily": "Georgia",
+          "fontSize": 42,
+          "fontWeight": "bold",
+          "color": "#ffffff",
+          "align": "center"
+        },
+        {
+          "id": "org-motto",
+          "name": "Motto",
+          "type": "text",
+          "x": 540,
+          "y": 160,
+          "text": "HOLD HIGH THE NOBLE BANNER OF MEDICAL ETHICS",
+          "fontFamily": "Georgia",
+          "fontSize": 20,
+          "fontWeight": "bold",
+          "color": "#f87171",
+          "align": "center"
+        },
+        {
+          "id": "camp-title",
+          "name": "Camp Title",
+          "type": "text",
+          "x": 540,
+          "y": 240,
+          "text": "MEGA FREE HEALTH & EYE CHECK-UP CAMP",
+          "fontFamily": "Georgia",
+          "fontSize": 34,
+          "fontWeight": "bold",
+          "color": "#facc15",
+          "align": "center"
+        },
+        {
+          "id": "date-badge",
+          "name": "Date Pill",
+          "type": "rect",
+          "x": 100,
+          "y": 350,
+          "width": 400,
+          "height": 90,
+          "radius": 45,
+          "fill": "#dc2626",
+          "stroke": "#ffffff",
+          "strokeWidth": 2
+        },
+        {
+          "id": "date-text",
+          "name": "Date Text",
+          "type": "text",
+          "x": 300,
+          "y": 405,
+          "text": "📅 SUNDAY, 15 NOV 2026",
+          "fontFamily": "Arial",
+          "fontSize": 24,
+          "fontWeight": "bold",
+          "color": "#ffffff",
+          "align": "center"
+        },
+        {
+          "id": "time-badge",
+          "name": "Time Pill",
+          "type": "rect",
+          "x": 580,
+          "y": 350,
+          "width": 400,
+          "height": 90,
+          "radius": 45,
+          "fill": "#0284c7",
+          "stroke": "#ffffff",
+          "strokeWidth": 2
+        },
+        {
+          "id": "time-text",
+          "name": "Time Text",
+          "type": "text",
+          "x": 780,
+          "y": 405,
+          "text": "⏰ 9:00 AM TO 4:00 PM",
+          "fontFamily": "Arial",
+          "fontSize": 24,
+          "fontWeight": "bold",
+          "color": "#ffffff",
+          "align": "center"
+        },
+        {
+          "id": "services-card",
+          "name": "Services Box",
+          "type": "rect",
+          "x": 80,
+          "y": 480,
+          "width": 920,
+          "height": 450,
+          "radius": 20,
+          "fill": "#000000",
+          "opacity": 0.45,
+          "stroke": "#38bdf8",
+          "strokeWidth": 2
+        },
+        {
+          "id": "services-head",
+          "name": "Services Heading",
+          "type": "text",
+          "x": 540,
+          "y": 540,
+          "text": "🩺 COMPREHENSIVE CLINICAL SERVICES AVAILABLE",
+          "fontFamily": "Georgia",
+          "fontSize": 28,
+          "fontWeight": "bold",
+          "color": "#38bdf8",
+          "align": "center"
+        },
+        {
+          "id": "service-1",
+          "name": "Service 1",
+          "type": "text",
+          "x": 140,
+          "y": 620,
+          "text": "• General Medicine & Cardiology Consultation",
+          "fontFamily": "Arial",
+          "fontSize": 24,
+          "color": "#ffffff",
+          "align": "left"
+        },
+        {
+          "id": "service-2",
+          "name": "Service 2",
+          "type": "text",
+          "x": 140,
+          "y": 690,
+          "text": "• Pediatric & Child Healthcare Screening",
+          "fontFamily": "Arial",
+          "fontSize": 24,
+          "color": "#ffffff",
+          "align": "left"
+        },
+        {
+          "id": "service-3",
+          "name": "Service 3",
+          "type": "text",
+          "x": 140,
+          "y": 760,
+          "text": "• Free Random Blood Sugar (RBS) & ECG",
+          "fontFamily": "Arial",
+          "fontSize": 24,
+          "color": "#ffffff",
+          "align": "left"
+        },
+        {
+          "id": "service-4",
+          "name": "Service 4",
+          "type": "text",
+          "x": 140,
+          "y": 830,
+          "text": "• Eye Refraction & Spectacle Distribution",
+          "fontFamily": "Arial",
+          "fontSize": 24,
+          "color": "#ffffff",
+          "align": "left"
+        },
+        {
+          "id": "footer-ribbon",
+          "name": "Footer Banner",
+          "type": "rect",
+          "x": 0,
+          "y": 1210,
+          "width": 1080,
+          "height": 140,
+          "fill": "#b91c1c"
+        },
+        {
+          "id": "footer-text",
+          "name": "Footer Callout",
+          "type": "text",
+          "x": 540,
+          "y": 1290,
+          "text": "ALL ARE WELCOME • FREE MEDICINE DISTRIBUTION",
+          "fontFamily": "Georgia",
+          "fontSize": 28,
+          "fontWeight": "bold",
+          "color": "#ffffff",
+          "align": "center"
+        }
+      ]
+    },
+    {
+      "id": "youtube-tech-thumbnail",
+      "title": "Reverse Engineering Canva & Adobe for Android",
+      "app": "craftstudio",
+      "version": "1.0",
+      "mode": "vector",
+      "canvas": {
+        "width": 1280,
+        "height": 720,
+        "background": "#090d16"
+      },
+      "layers": [
+        {
+          "id": "glow-rect",
+          "name": "Backlight Glow",
+          "type": "rect",
+          "x": 60,
+          "y": 60,
+          "width": 1160,
+          "height": 600,
+          "radius": 24,
+          "fill": "#131b2e",
+          "stroke": "#00f0ff",
+          "strokeWidth": 3
+        },
+        {
+          "id": "tag-badge",
+          "name": "Tag Pill",
+          "type": "rect",
+          "x": 100,
+          "y": 110,
+          "width": 360,
+          "height": 60,
+          "radius": 30,
+          "fill": "#f43f5e"
+        },
+        {
+          "id": "tag-text",
+          "name": "Tag Text",
+          "type": "text",
+          "x": 280,
+          "y": 150,
+          "text": "🔥 100% FREE NO SUBSCRIPTION",
+          "fontFamily": "Arial",
+          "fontSize": 20,
+          "fontWeight": "bold",
+          "color": "#ffffff",
+          "align": "center"
+        },
+        {
+          "id": "main-hook",
+          "name": "Main Hook Headline",
+          "type": "text",
+          "x": 100,
+          "y": 270,
+          "text": "REPLACE COREL & ADOBE",
+          "fontFamily": "Georgia",
+          "fontSize": 68,
+          "fontWeight": "bold",
+          "color": "#ffffff",
+          "align": "left"
+        },
+        {
+          "id": "sub-hook",
+          "name": "Sub Hook",
+          "type": "text",
+          "x": 100,
+          "y": 380,
+          "text": "ON YOUR ANDROID TABLET",
+          "fontFamily": "Georgia",
+          "fontSize": 64,
+          "fontWeight": "bold",
+          "color": "#00f0ff",
+          "align": "left"
+        },
+        {
+          "id": "cta-pill",
+          "name": "ChatGPT Bridge Badge",
+          "type": "rect",
+          "x": 100,
+          "y": 480,
+          "width": 640,
+          "height": 100,
+          "radius": 20,
+          "fill": "#10a37f",
+          "stroke": "#ffffff",
+          "strokeWidth": 3
+        },
+        {
+          "id": "cta-text",
+          "name": "CTA Label",
+          "type": "text",
+          "x": 420,
+          "y": 542,
+          "text": "🤖 DIRECT CHATGPT TO CANVAS EXPORT",
+          "fontFamily": "Arial",
+          "fontSize": 28,
+          "fontWeight": "bold",
+          "color": "#ffffff",
+          "align": "center"
+        }
+      ]
+    }
+  ]
+}

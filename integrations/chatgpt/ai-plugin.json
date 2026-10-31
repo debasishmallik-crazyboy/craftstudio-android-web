@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "CraftStudio Generative Design Bridge",
+  "name_for_model": "craftstudio_design_bridge",
+  "description_for_human": "Directly transfer AI-generated graphic designs, posters, flyers, and banners into editable CraftStudio (DesignCraft & PhotoCraft) format on Android Tablet and Web.",
+  "description_for_model": "Generate fully editable vector and photo layered designs for CraftStudio. Emits structured JSON and clickable direct-launch URLs that open the editable design on Android tablets and web browsers with zero hosting overhead.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://debasishmallik-crazyboy.github.io/craftstudio-android-web/integrations/chatgpt/openapi.yaml"
+  },
+  "logo_url": "https://debasishmallik-crazyboy.github.io/craftstudio-android-web/assets/icons/icon-512.png",
+  "contact_email": "admin@craftstudio.local",
+  "legal_info_url": "https://debasishmallik-crazyboy.github.io/craftstudio-android-web"
+}
