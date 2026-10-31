@@ -1,0 +1,6 @@
+# family | style | file (relative to site root) | scripts
+Deb Page Number | Regular | fonts/Deb_Page-Number.ttf | Beng,Deva,Latn
+Adobe Devanagari | Regular | fonts/AdobeDevanagari-Regular.otf | Beng,Deva,Latn
+Debben Pagenumber | Regular | fonts/Debben-Pagenumber.ttf | Beng,Deva,Latn
+Ruposhi Bangla | Regular | fonts/RuposhiBanglaPrUNI.ttf | Beng,Deva,Latn
+Ruposhi Bangla | Bold | fonts/RuposhiBanglaPrUNI-Bold.ttf | Beng,Deva,Latn

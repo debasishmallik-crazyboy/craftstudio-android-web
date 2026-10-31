@@ -20,7 +20,11 @@ const MIME_TYPES = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.yaml': 'text/yaml; charset=utf-8',
-  '.wasm': 'application/wasm'
+  '.wasm': 'application/wasm',
+  '.ttf': 'font/ttf',
+  '.otf': 'font/otf',
+  '.woff2': 'font/woff2',
+  '.txt': 'text/plain; charset=utf-8'
 };
 
 function getLocalIp() {

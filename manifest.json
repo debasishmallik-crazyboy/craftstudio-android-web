@@ -1,6 +1,6 @@
 {
-  "name": "দেবাশিস River Studio — Craft Integration Project One",
-  "short_name": "River Studio",
+  "name": "Debasish Reverse Craft Studio — Craft Web Integration Project One",
+  "short_name": "Reverse Craft",
   "description": "Open-source CorelDRAW, Illustrator & Photoshop replacement for Android Tablet & Web, featuring direct ChatGPT generative design transfer.",
   "start_url": "./index.html",
   "display": "standalone",
