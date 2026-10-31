@@ -136,10 +136,47 @@
       background: #262626 !important;
       touch-action: none !important;
     }
+    /* Touchscreen Pro Companion Dock Inline Styles */
+    .touch-dock {
+      position: fixed !important;
+      top: 46px !important;
+      z-index: 850 !important;
+      background: rgba(15, 23, 42, 0.94) !important;
+      backdrop-filter: blur(14px) !important;
+      -webkit-backdrop-filter: blur(14px) !important;
+      border: 1px solid rgba(56, 189, 248, 0.4) !important;
+      border-radius: 12px !important;
+      padding: 8px !important;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 7px !important;
+      width: 190px !important;
+      user-select: none !important;
+      -webkit-user-select: none !important;
+      touch-action: manipulation !important;
+    }
+    .touch-dock.touch-dock-left { left: 8px !important; right: auto !important; }
+    .touch-dock.touch-dock-right { right: 8px !important; left: auto !important; }
+    .touch-dock.dock-hidden { display: none !important; }
+    .touch-dock.dock-minimized { display: none !important; }
+
+    .btn-touch-toggle.active {
+      background: linear-gradient(135deg, #10b981, #059669) !important;
+      border: 1px solid #34d399 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5) !important;
+    }
+    .touch-label {
+      font-size: 10px !important;
+      font-weight: 700 !important;
+      display: inline !important;
+    }
     @media (max-width: 900px) {
       .app-badge { display: none !important; }
       .action-text { display: none !important; }
       .brand-logo { font-size: 11px !important; }
+      .touch-label { display: inline !important; }
     }
     @media (max-width: 640px) {
       :root { --header-height: 36px; }
@@ -147,6 +184,8 @@
       .brand-logo .brand-text { max-width: 82px !important; }
       .mode-label { display: none !important; }
       #btn-tablet-guide { display: none !important; }
+      .touch-label { display: inline !important; font-size: 9.5px !important; }
+      .touch-dock { width: 175px !important; top: 42px !important; padding: 6px !important; gap: 5px !important; }
     }
   </style>
 </head>
@@ -185,8 +224,8 @@
       <!-- Action Buttons -->
       <div class="header-actions">
         <!-- Touch Mode vs Desktop Mode Toggle -->
-        <button id="btn-touch-mode-toggle" class="btn btn-touch-toggle" onclick="toggleTouchMode()" title="Toggle Touchscreen Pro Tablet Mode (Modifiers & Actions)">
-          👆 <span class="action-text">Touch Pro</span>
+        <button id="btn-touch-mode-toggle" class="btn btn-touch-toggle active" onclick="toggleTouchMode()" title="Toggle Touchscreen Pro Tablet Mode (Modifiers & Actions)">
+          <span class="touch-icon">👆</span> <span class="touch-label">Touch Pro</span>
         </button>
         <button id="btn-toggle-fullscreen" class="btn" onclick="toggleHeaderCollapse()" title="Toggle Fullscreen Canvas (Maximize workspace)">
           📐 <span class="action-text">Maximize</span>
@@ -209,7 +248,7 @@
     <div id="studio-toast" class="studio-toast"></div>
 
     <!-- Touchscreen Pro Companion Dock (Virtual Modifiers & Shortcuts) -->
-    <div id="touch-companion-dock" class="touch-dock touch-dock-left dock-hidden">
+    <div id="touch-companion-dock" class="touch-dock touch-dock-left">
       <!-- Header: Drag Handle, Side Flip & Minimize -->
       <div class="dock-header">
         <span class="dock-title">👆 TOUCH PRO</span>
@@ -803,32 +842,41 @@ npx @bubblewrap/cli build</pre>
       alert('Downloaded "ai_design.svg"! You can now Drag & Drop or use File → Open inside VectorCraft/PhotoCraft.');
     }
 
-    // Auto-detect touchscreen device and initialize mode
-    window.addEventListener('DOMContentLoaded', () => {
-      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 820);
+    // Auto-detect touchscreen device and initialize mode (Immediate Lifecycle Execution)
+    function initTouchMode() {
+      const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 1024);
       const savedMode = localStorage.getItem('craft_touch_mode');
       
-      if (savedMode === '1' || (savedMode === null && isTouchDevice)) {
-        toggleTouchMode(true);
-      } else {
+      // Default to Touch Pro ON unless explicitly turned off by desktop user
+      if (savedMode === '0') {
         toggleTouchMode(false);
+      } else {
+        toggleTouchMode(true);
       }
 
       // Hook iframe when loaded
       const iframe = document.getElementById('engine-frame');
       iframe?.addEventListener('load', () => {
-        setTimeout(hookIframeEvents, 800);
+        setTimeout(hookIframeEvents, 600);
       });
-      setTimeout(hookIframeEvents, 1500);
-    });
+      setTimeout(hookIframeEvents, 1000);
+      setTimeout(hookIframeEvents, 2500);
+    }
 
-    // Register Service Worker for 100% Offline Standalone Android Tablet Usage
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTouchMode);
+    } else {
+      initTouchMode();
+    }
+
+    // Register Service Worker with instant update check
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('🌊 River Studio Offline PWA Ready! Scope:', reg.scope))
-          .catch(err => console.warn('PWA registration:', err));
-      });
+      navigator.serviceWorker.register('./sw.js?v=3.5')
+        .then(reg => {
+          reg.update();
+          console.log('River Studio Service Worker active:', reg.scope);
+        })
+        .catch(err => console.warn('SW:', err));
     }
   </script>
 </body>
