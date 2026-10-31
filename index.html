@@ -1,231 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CraftStudio — DesignCraft, VectorCraft & PhotoCraft for Android Tablet & Web</title>
-  
-  <!-- PWA Manifest & Meta -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#10a37f">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1e27">
+  <title>CraftStudio Suite — Official ArtCraft (PhotoCraft, VectorCraft & DesignCraft) for Android Tablet & Web</title>
+  
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
-
   <link rel="stylesheet" href="css/studio.css">
+  <style>
+    /* Fullscreen iframe workspace for official Rust Wasm engines */
+    #engine-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      background: #262626;
+    }
+    .app-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+    }
+  </style>
 </head>
 <body>
   <div id="app-container">
     
-    <!-- Top Header -->
+    <!-- Top Global Header -->
     <header id="top-header">
       <div class="brand-section">
         <div class="brand-logo">
-          🎨 CraftStudio <span class="badge-pro">Pro</span>
+          🎨 CraftStudio <span class="badge-pro">Official Suite</span>
         </div>
         
-        <!-- Studio Mode Switcher -->
+        <!-- Official ArtCraft App Switcher -->
         <div class="mode-switcher">
-          <button id="mode-vector" class="mode-btn vector-mode active" title="DesignCraft & VectorCraft Mode (CorelDRAW & Illustrator Alternative)">
-            📐 Vector & Layout
+          <button id="tab-vectorcraft" class="mode-btn active vector-mode" onclick="switchApp('vectorcraft')">
+            🐉 VectorCraft <span class="app-badge">Illustrator/Corel</span>
           </button>
-          <button id="mode-raster" class="mode-btn raster-mode" title="PhotoCraft Mode (Photoshop Alternative)">
-            🖼️ PhotoCraft
+          <button id="tab-photocraft" class="mode-btn raster-mode" onclick="switchApp('photocraft')">
+            🦊 PhotoCraft <span class="app-badge">Photoshop</span>
+          </button>
+          <button id="tab-designcraft" class="mode-btn" onclick="switchApp('designcraft')">
+            🐱 DesignCraft <span class="app-badge">InDesign</span>
           </button>
         </div>
-      </div>
-
-      <!-- Document Title & Canvas Size -->
-      <div class="doc-info">
-        <input type="text" id="doc-title" class="doc-title-input" value="Medical Camp Flyer" placeholder="Project Name">
-        <select id="preset-select" class="preset-select">
-          <option value="1080x1350" selected>Flyer / Portrait (1080 × 1350)</option>
-          <option value="1280x720">YouTube Thumbnail (1280 × 720)</option>
-          <option value="1080x1080">Square Social Post (1080 × 1080)</option>
-          <option value="794x1123">A4 Document / Print (794 × 1123)</option>
-          <option value="1080x1920">Story / Reels (1080 × 1920)</option>
-        </select>
       </div>
 
       <!-- Action Buttons -->
       <div class="header-actions">
-        <button id="btn-import-ai" class="btn btn-ai" title="Import from ChatGPT Plus/Go or JSON">
-          🤖 ChatGPT Import
+        <button id="btn-open-direct" class="btn" onclick="openDirectApp()" title="Open Current App in Fullscreen Window">
+          ↗️ Full Window
         </button>
-        <button id="btn-qr-sync" class="btn" title="Transfer Design to Tablet / Mobile via QR Code">
-          📲 Tablet Sync
+        <button id="btn-chatgpt-ai" class="btn btn-ai" onclick="toggleAiModal()" title="ChatGPT & Gemini AI Generative Bridge">
+          🤖 ChatGPT / Gemini AI
         </button>
-        <button id="btn-export" class="btn btn-primary" title="Export High-Res PNG, SVG, or Print PDF">
-          📤 Export
+        <button id="btn-tablet-guide" class="btn" onclick="toggleTabletModal()" title="Install on Android Tablet as APK or PWA">
+          📱 Tablet Install
         </button>
       </div>
     </header>
 
-    <!-- Contextual Property Bar -->
-    <div id="property-bar">
-      <div class="prop-group">
-        <span class="prop-label">Color:</span>
-        <input type="color" id="prop-fill" value="#ffffff">
-      </div>
-      
-      <div class="prop-divider"></div>
-
-      <div class="prop-group">
-        <span class="prop-label">Font:</span>
-        <select id="prop-font-family" class="prop-input">
-          <option value="Georgia" selected>Georgia (Editorial Serif)</option>
-          <option value="Arial">Arial (Clean Sans)</option>
-          <option value="'Segoe UI', Roboto, sans-serif">System Sans</option>
-          <option value="'Times New Roman', serif">Times New Roman</option>
-          <option value="'Courier New', monospace">Courier Monospace</option>
-        </select>
-        <input type="number" id="prop-font-size" class="prop-input prop-input-number" value="36" min="8" max="200">
-        <button id="prop-bold" class="btn" style="padding: 4px 8px; font-weight: bold;">B</button>
-      </div>
-
-      <div class="prop-divider"></div>
-
-      <div class="prop-group">
-        <span class="prop-label">Opacity:</span>
-        <input type="range" id="prop-opacity" min="0" max="1" step="0.05" value="1.0" style="width: 80px;">
-      </div>
-
-      <div class="prop-divider"></div>
-
-      <div class="prop-group">
-        <button id="btn-undo" class="btn" title="Undo (Ctrl+Z)">↩️ Undo</button>
-        <button id="btn-redo" class="btn" title="Redo (Ctrl+Y)">↪️ Redo</button>
-      </div>
-    </div>
-
-    <!-- Main Workspace -->
-    <div id="main-workspace">
-      
-      <!-- Left Toolbar (Touch & Tablet Optimized) -->
-      <div id="toolbar">
-        <button class="tool-btn active" data-tool="select" title="Selection Tool (V)">
-          ↖️<span class="hotkey">V</span>
-        </button>
-        <button class="tool-btn" data-tool="text" title="Text Tool (T)">
-          🔤<span class="hotkey">T</span>
-        </button>
-        <button class="tool-btn" data-tool="rect" title="Rectangle Tool (M)">
-          ⬛<span class="hotkey">M</span>
-        </button>
-        <button class="tool-btn" data-tool="brush" title="S-Pen / Brush Tool (B)">
-          🖌️<span class="hotkey">B</span>
-        </button>
-        <div class="tool-sep"></div>
-        <button class="tool-btn" data-tool="hand" title="Hand / Pan Canvas (H)">
-          ✋<span class="hotkey">H</span>
-        </button>
-      </div>
-
-      <!-- Canvas Viewport -->
-      <div id="canvas-viewport">
-        <div id="canvas-container">
-          <canvas id="paint-canvas"></canvas>
-          <div id="selection-overlay">
-            <div class="handle handle-nw"></div>
-            <div class="handle handle-ne"></div>
-            <div class="handle handle-se"></div>
-            <div class="handle handle-sw"></div>
-          </div>
-        </div>
-
-        <!-- Floating Tablet Zoom Bar -->
-        <div class="floating-zoom-bar">
-          <button id="btn-zoom-out">➖</button>
-          <span id="zoom-val" class="zoom-level">80%</span>
-          <button id="btn-zoom-in">➕</button>
-          <button id="btn-zoom-reset" style="font-size: 11px;">Fit</button>
-        </div>
-      </div>
-
-      <!-- Right Inspector -->
-      <aside id="inspector">
-        <div class="inspector-tabs">
-          <button class="tab-btn active" data-tab="tab-layers">📑 Layers</button>
-          <button class="tab-btn" data-tab="tab-chatgpt">🤖 ChatGPT</button>
-        </div>
-
-        <!-- Tab 1: Layers -->
-        <div id="tab-layers" class="tab-content active">
-          <div id="layer-list" class="layer-list">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
-
-        <!-- Tab 2: ChatGPT Bridge -->
-        <div id="tab-chatgpt" class="tab-content">
-          <h4 style="color: #ffffff; margin-bottom: 8px;">Direct ChatGPT Transfer</h4>
-          <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 12px;">
-            ChatGPT generates a 1-click launch link or JSON document. Paste it below or tap the direct link from your chat to edit instantly!
-          </p>
-          <button id="btn-load-sample-1" class="btn btn-ai" style="width: 100%; margin-bottom: 8px;">
-            🏥 Medical Camp Poster
-          </button>
-          <button id="btn-load-sample-2" class="btn" style="width: 100%; margin-bottom: 8px;">
-            🎬 YouTube Thumbnail
-          </button>
-        </div>
-      </aside>
-
-    </div>
+    <!-- Main Viewport embedding the Official Rust WebAssembly Engines -->
+    <main id="main-workspace" style="width: 100%; height: calc(100vh - var(--header-height));">
+      <iframe 
+        id="engine-frame" 
+        src="apps/vectorcraft/?webgl" 
+        title="ArtCraft Suite Engine" 
+        allow="fullscreen; clipboard-read; clipboard-write; download" 
+        allowfullscreen>
+      </iframe>
+    </main>
   </div>
 
-  <!-- Modal: Import AI Design -->
-  <div id="modal-import" class="modal-overlay">
+  <!-- Modal: ChatGPT & Gemini Generative AI Bridge -->
+  <div id="modal-ai" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
-        <div class="modal-title">🤖 Import Design from ChatGPT</div>
-        <button class="icon-btn modal-close">✕</button>
+        <div class="modal-title">🤖 ChatGPT & Gemini Generative Design Bridge</div>
+        <button class="icon-btn" onclick="toggleAiModal()">✕</button>
       </div>
       <div class="modal-body">
-        <p>Paste the JSON design generated by ChatGPT Plus / Go:</p>
-        <textarea id="import-json-text" class="json-textarea" placeholder='{"app": "craftstudio", "canvas": {...}, "layers": [...]}'></textarea>
-        <button id="btn-do-import" class="btn btn-primary" style="align-self: flex-end;">
-          Import to Canvas
-        </button>
-      </div>
-    </div>
-  </div>
+        <p>
+          Just like Canva in ChatGPT, you can command ChatGPT Plus / Go or Gemini to generate editable designs, layouts, or color grading scripts, and open them directly in the official <strong>VectorCraft</strong>, <strong>PhotoCraft</strong>, or <strong>DesignCraft</strong> engines!
+        </p>
 
-  <!-- Modal: Export High-Res -->
-  <div id="modal-export" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <div class="modal-title">📤 Export Project</div>
-        <button class="icon-btn modal-close">✕</button>
-      </div>
-      <div class="modal-body">
-        <p>Select your desired export format:</p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          <button id="btn-export-png" class="btn">🖼️ PNG Image (1x Web)</button>
-          <button id="btn-export-png2x" class="btn btn-primary">💎 Ultra-HD PNG (2x Print)</button>
-          <button id="btn-export-svg" class="btn">📐 Scalable Vector (SVG)</button>
-          <button id="btn-export-json" class="btn">💾 Project File (.craft.json)</button>
+        <div style="background: var(--bg-dark); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+          <strong style="color: #38bdf8;">Quick Prompts for ChatGPT / Gemini:</strong>
+          <ul style="margin-left: 20px; margin-top: 8px; font-size: 12px; line-height: 1.6; color: #cbd5e1;">
+            <li><em>"Generate an SVG vector logo for Medical Service Centre with clean bezier curves."</em></li>
+            <li><em>"Create an A4 two-column deputation letter layout with official header."</em></li>
+            <li><em>"Write a PhotoCraft adjustment action list for cinematic color grade: curves, vibrance +20, contrast +15."</em></li>
+          </ul>
+        </div>
+
+        <div>
+          <label style="font-weight: 600; display: block; margin-bottom: 6px;">Load AI Design / SVG into Active Studio:</label>
+          <textarea id="ai-input-text" class="json-textarea" placeholder="Paste SVG, .vectorcraft JSON, or Action list here..."></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="btn" onclick="loadSampleSvg()">Load Medical Camp Sample</button>
+          <button class="btn btn-primary" onclick="injectIntoStudio()">Load into Canvas</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal: QR Code Tablet Sync -->
-  <div id="modal-qr" class="modal-overlay">
-    <div class="modal-card" style="text-align: center; align-items: center;">
-      <div class="modal-header" style="width: 100%;">
-        <div class="modal-title">📲 Open Design on Android Tablet</div>
-        <button class="icon-btn modal-close">✕</button>
+  <!-- Modal: Tablet Install & APK Guide -->
+  <div id="modal-tablet" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">📱 Android Tablet Installation Guide</div>
+        <button class="icon-btn" onclick="toggleTabletModal()">✕</button>
       </div>
-      <div class="modal-body" style="align-items: center;">
-        <p>Scan with your tablet or mobile camera to open this editable design instantly:</p>
-        <img id="qr-img" src="" alt="Tablet Transfer QR Code" style="width: 220px; height: 220px; border-radius: 8px; border: 4px solid #ffffff; margin: 10px 0;">
-        <input type="text" id="qr-link-input" class="prop-input" style="width: 100%; text-align: center;" readonly>
+      <div class="modal-body">
+        <h4 style="color: #ffffff;">Option 1: Instant PWA Install (Recommended — 100% Free Forever)</h4>
+        <ol style="margin-left: 20px; line-height: 1.6;">
+          <li>Connect your Android Tablet to the same Wi-Fi as your PC.</li>
+          <li>Open Chrome on your tablet and go to: <strong id="tablet-local-ip">http://192.168.1.3:3000/</strong></li>
+          <li>Tap the Chrome menu (<strong>⋮</strong> in top right corner).</li>
+          <li>Tap <strong>"Add to Home screen" / "Install app"</strong>.</li>
+          <li>The app will install as a standalone full-screen app with full S-Pen & touch support!</li>
+        </ol>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 8px 0;">
+
+        <h4 style="color: #ffffff;">Option 2: Standalone Android APK</h4>
+        <p>The official ArtCraft suite compiles pure Rust to WebAssembly. You can generate a native <code>.apk</code> wrapper using Bubblewrap or Capacitor:</p>
+        <pre style="background: #000; padding: 10px; border-radius: 6px; font-size: 11px; overflow-x: auto; color: #10a37f;">npx @bubblewrap/cli init --manifest=http://192.168.1.3:3000/manifest.json
+npx @bubblewrap/cli build</pre>
       </div>
     </div>
   </div>
 
-  <script type="module" src="js/app.js"></script>
+  <script>
+    let currentApp = 'vectorcraft';
+
+    function switchApp(appName) {
+      currentApp = appName;
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + appName).classList.add('active');
+
+      const frame = document.getElementById('engine-frame');
+      frame.src = 'apps/' + appName + '/?webgl';
+    }
+
+    function openDirectApp() {
+      window.open('apps/' + currentApp + '/?webgl', '_blank');
+    }
+
+    function toggleAiModal() {
+      const modal = document.getElementById('modal-ai');
+      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function toggleTabletModal() {
+      const modal = document.getElementById('modal-tablet');
+      modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function loadSampleSvg() {
+      const sample = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <rect width="100%" height="100%" fill="#0b192c"/>
+  <rect x="40" y="40" width="1000" height="250" rx="16" fill="#1e3e62" stroke="#f59e0b" stroke-width="3"/>
+  <text x="540" y="110" font-family="Georgia" font-size="42" font-weight="bold" fill="#ffffff" text-anchor="middle">MEDICAL SERVICE CENTRE</text>
+  <text x="540" y="160" font-family="Georgia" font-size="20" font-weight="bold" fill="#f87171" text-anchor="middle">HOLD HIGH THE NOBLE BANNER OF MEDICAL ETHICS</text>
+  <text x="540" y="235" font-family="Georgia" font-size="34" font-weight="bold" fill="#facc15" text-anchor="middle">MEGA FREE HEALTH &amp; EYE CHECK-UP CAMP</text>
+  <rect x="100" y="350" width="420" height="80" rx="40" fill="#dc2626"/>
+  <text x="310" y="402" font-family="Arial" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">📅 SUNDAY, 15 NOV 2026</text>
+  <rect x="560" y="350" width="420" height="80" rx="40" fill="#0284c7"/>
+  <text x="770" y="402" font-family="Arial" font-size="24" font-weight="bold" fill="#ffffff" text-anchor="middle">⏰ 9:00 AM TO 4:00 PM</text>
+</svg>`;
+      document.getElementById('ai-input-text').value = sample;
+    }
+
+    function injectIntoStudio() {
+      const text = document.getElementById('ai-input-text').value.trim();
+      if (!text) return alert('Please paste an SVG or design text.');
+      
+      // Download as temporary file to open in ArtCraft app
+      const blob = new Blob([text], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ai_design.svg';
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      toggleAiModal();
+      alert('Downloaded "ai_design.svg"! You can now Drag & Drop or use File → Open inside VectorCraft/PhotoCraft.');
+    }
+  </script>
 </body>
 </html>
