@@ -36,37 +36,53 @@
     <!-- Top Global Header -->
     <header id="top-header">
       <div class="brand-section">
-        <div class="brand-logo">
-          ⚡ Debasish Reverse Craft Studio <span class="badge-pro">Craft Web Integration Project One</span>
+        <div class="brand-logo" title="Debasish Reverse Craft Studio">
+          <span class="brand-icon">⚡</span>
+          <span class="brand-text">Debasish Reverse Craft Studio</span>
+          <span class="badge-pro">Craft Web Integration Project One</span>
         </div>
         
         <!-- Official ArtCraft App Switcher -->
         <div class="mode-switcher">
-          <button id="tab-vectorcraft" class="mode-btn active vector-mode" onclick="switchApp('vectorcraft')">
-            🐉 VectorCraft <span class="app-badge">Illustrator/Corel</span>
+          <button id="tab-vectorcraft" class="mode-btn active vector-mode" onclick="switchApp('vectorcraft')" title="VectorCraft (Illustrator / CorelDRAW alternative)">
+            <span class="mode-icon">🐉</span>
+            <span class="mode-label">VectorCraft</span>
+            <span class="app-badge">Illustrator/Corel</span>
           </button>
-          <button id="tab-photocraft" class="mode-btn raster-mode" onclick="switchApp('photocraft')">
-            🦊 PhotoCraft <span class="app-badge">Photoshop</span>
+          <button id="tab-photocraft" class="mode-btn raster-mode" onclick="switchApp('photocraft')" title="PhotoCraft (Photoshop alternative)">
+            <span class="mode-icon">🦊</span>
+            <span class="mode-label">PhotoCraft</span>
+            <span class="app-badge">Photoshop</span>
           </button>
-          <button id="tab-designcraft" class="mode-btn" onclick="switchApp('designcraft')">
-            🐱 DesignCraft <span class="app-badge">InDesign</span>
+          <button id="tab-designcraft" class="mode-btn" onclick="switchApp('designcraft')" title="DesignCraft (InDesign / Canva alternative)">
+            <span class="mode-icon">🐱</span>
+            <span class="mode-label">DesignCraft</span>
+            <span class="app-badge">InDesign</span>
           </button>
         </div>
       </div>
 
       <!-- Action Buttons -->
       <div class="header-actions">
+        <button id="btn-toggle-fullscreen" class="btn" onclick="toggleHeaderCollapse()" title="Toggle Fullscreen Canvas (Maximize workspace)">
+          📐 <span class="action-text">Maximize</span>
+        </button>
         <button id="btn-open-direct" class="btn" onclick="openDirectApp()" title="Open Current App in Fullscreen Window">
-          ↗️ Full Window
+          ↗️ <span class="action-text">Full Window</span>
         </button>
         <button id="btn-chatgpt-ai" class="btn btn-ai" onclick="toggleAiModal()" title="ChatGPT & Gemini AI Generative Bridge">
-          🤖 ChatGPT / Gemini AI
+          🤖 <span class="action-text">ChatGPT AI</span>
         </button>
         <button id="btn-tablet-guide" class="btn" onclick="toggleTabletModal()" title="Install on Android Tablet as APK or PWA">
-          📱 Tablet Install
+          📱 <span class="action-text">Tablet</span>
         </button>
       </div>
     </header>
+
+    <!-- Floating Restore Button when header is minimized -->
+    <button id="floating-restore-header" class="floating-header-btn" onclick="toggleHeaderCollapse()" title="Show Studio Menu">
+      ⚡ Studio Menu 🔽
+    </button>
 
     <!-- Main Viewport embedding the Official Rust WebAssembly Engines -->
     <main id="main-workspace" style="width: 100%; height: calc(100vh - var(--header-height));">
@@ -143,6 +159,22 @@ npx @bubblewrap/cli build</pre>
 
   <script>
     let currentApp = 'vectorcraft';
+
+    function toggleHeaderCollapse() {
+      const header = document.getElementById('top-header');
+      const mainWorkspace = document.getElementById('main-workspace');
+      const restoreBtn = document.getElementById('floating-restore-header');
+      
+      if (header.classList.contains('collapsed')) {
+        header.classList.remove('collapsed');
+        restoreBtn.style.display = 'none';
+        mainWorkspace.style.height = 'calc(100vh - var(--header-height))';
+      } else {
+        header.classList.add('collapsed');
+        restoreBtn.style.display = 'flex';
+        mainWorkspace.style.height = '100vh';
+      }
+    }
 
     function switchApp(appName) {
       currentApp = appName;
